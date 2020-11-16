@@ -1,0 +1,18 @@
+# Function for drawing a board
+
+from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
+from PIL import Image, ImageDraw
+import time
+
+class MatrixDisplay(object):
+  # define matrix width and height
+  matrix_w = 64
+  matrix_h = 32
+  #define some matrix options 
+  options = RGBMatrixOptions()
+  options.rows = matrix_w
+  options.cols = matrix_w
+  options.chain_length = 1
+  options.parallel = 1
+  options.hardware_mapping = 'adafruit-hat'
+  chipSize = (2,2)
