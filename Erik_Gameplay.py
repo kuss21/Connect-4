@@ -1,6 +1,8 @@
+#!/usr/bin/env python
+
 #variables for size of board, if changed, need to fix the array for the board in playGame()
-amtOfRow = 7
-amtOfCol = 6
+amtOfRow = 6
+amtOfCol = 10
 from enum import Enum, unique
 @unique
 class Piece(Enum):
