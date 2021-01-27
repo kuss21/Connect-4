@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
+# to run this do this:
+# python3 ./Erik_Gampeplay.py
+
 #variables for size of board, if changed, need to fix the array for the board in playGame()
-amtOfRow = 6
+amtOfRow = 7
 amtOfCol = 10
 from enum import Enum, unique
 @unique
