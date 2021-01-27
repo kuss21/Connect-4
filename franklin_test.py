@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #!/usr/bin/env python
 from PIL import Image
 from PIL import ImageDraw
@@ -58,6 +57,3 @@ if __name__=="__main__":
     test_frank = TestFranklin()
     if (not test_frank.process()):
         test_frank.print_help()
-=======
->>>>>>> c040407cbd2bf47c72847d12ecb0affea50b6fa6
-
