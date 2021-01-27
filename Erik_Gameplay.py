@@ -16,11 +16,11 @@ def drawBoard(boardToPrint):
 	for row in range(amtOfRow):
 		line = '|'
 		for col in range(amtOfCol):
-			if(boardToPrint[row][col] == Piece.BLANK):
+			if(boardToPrint[amtOfRow - row - 1][col] == Piece.BLANK):
 				line += ' '
-			elif(boardToPrint[row][col] == Piece.RED):
+			elif(boardToPrint[amtOfRow - row - 1][col] == Piece.RED):
 				line += 'O'
-			elif(boardToPrint[row][col] == Piece.YELLOW):
+			elif(boardToPrint[amtOfRow - row - 1][col] == Piece.YELLOW):
 				line += 'X'
 			line += '|'
 		print(line)
@@ -29,8 +29,8 @@ def drawBoard(boardToPrint):
 #add Piece adds the 'piece' (string of the player, either 'X' or 'O') into the column specified
 def addPiece(currentBoard, column, player):
 	for row in range(amtOfRow):
-		if(currentBoard[amtOfRow - row - 1][column] == Piece.BLANK):
-			currentBoard[amtOfRow - row - 1][column] = player
+		if(currentBoard[row][column] == Piece.BLANK):
+			currentBoard[row][column] = player
 			return
 
 #playPiece waits for a user to input a valid column to put the piece in the board using addPiece
@@ -44,7 +44,10 @@ def playPiece(currentBoard, player):
 
 #endGame checks to see if the game is done by seeing if there are any empty spaces left (currently doesn't
 #check for wins (lines of four))
-def endGame(currentBoard):
+def endGame(currentBoard, player):
+	if(connected_four(get_position_mask_bitmap(currentBoard, player))):
+		return True
+
 	for row in range(amtOfRow):
 		for col in range(amtOfCol):
 			if(currentBoard[row][col] == Piece.BLANK):
@@ -58,32 +61,96 @@ def endGame(currentBoard):
 #to stop the current iteration of playGame before the board is full, enter any non integer character in the
 #command line and hit enter and an error will occur
 def playGame():
-	#variable for board, need to change for different sizes of boards, also need to change 'amtOfRow' and 'amtOfCol'
-	board = [[Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK], 
-		   [Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK], 
-           [Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK],
-           [Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK],
-           [Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK],
-           [Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK],
-           [Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK],
-           [Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK, Piece.BLANK]]
+	#https://www.geeksforgeeks.org/python-using-2d-arrays-lists-the-right-way/
+	#used for creating a dynamic 2d array 
+	board = [[0 for i in range(amtOfCol)] for j in range(amtOfRow)]
+	for row in range(amtOfRow):
+		for col in range(amtOfCol):
+			board[row][col] = Piece.BLANK
+
 	playerTurn = Piece.RED
 
-	while(endGame(board) == False):
-		playPiece(board, playerTurn)
-		drawBoard(board)
-
-		#test for wins (ai code)
-		#, gameMask = get_position_mask_bitmap(board, playerTurn)
-		#if(connected_four(gamePosition) == True):
-		#	print('True')
-		#else:
-		#	print('False')
-
-
+	while(endGame(board, playerTurn) == False):
 		if(playerTurn == Piece.RED):
 			playerTurn = Piece.YELLOW
 		else:
 			playerTurn = Piece.RED
+
+		playPiece(board, playerTurn)
+		drawBoard(board)
+
+
+		#used for testing
+
+#changing an array into a bitstring
+#code is referenced from TowardsDataScience.com
+def get_position_mask_bitmap(board, player):
+	bitmap = ""
+	for col in range (0, amtOfCol, 1):
+		for row in range (0, amtOfRow, 1):
+			if board[row][col] == player:
+				bitmap = "1" + bitmap
+			else:
+				bitmap = "0" + bitmap
+		#add an extra zero into the bitstring to help with checking for diagonal wins
+		#this is similar to adding an extra row full of blanks 
+		bitmap = "0" + bitmap
+	return int(bitmap, 2)
+
+#check for wins on the board
+#code is referenced from TowardsDataScience.com
+def connected_four(position):
+	#check for win vertical 
+	for col in range(amtOfCol):
+		inRow = 0
+		for index in range(amtOfRow + 1):
+			shift = (col * (amtOfRow + 1)) + index
+			if((position >> shift) & 1) == 1:
+				inRow += 1
+			else:
+				inRow = 0
+
+			if inRow == 4:
+				return True
+
+	#check for win horizontal
+	for row in range(amtOfRow):
+		inRow = 0
+		for index in range(amtOfCol):
+			shift = (row) + (index * (amtOfRow + 1))
+			if((position >> shift) & 1) == 1:
+				inRow += 1
+			else:
+				inRow = 0
+
+			if inRow == 4:
+				return True
+
+	#check for bottom left to top right diagonal
+	for row in range(amtOfRow + 2):
+		for col in range(amtOfCol - 1):
+			shift = row + (col * (amtOfRow + 2))
+			if((position >> shift) & 1) == 1:
+				inRow += 1
+			else:
+				inRow = 0
+
+			if inRow == 4:
+				return True
+
+	#check for top left to bottom right diagonal
+	for row in range(amtOfRow):
+		for col in range(amtOfCol + 2):
+			shift = row + (col * amtOfRow)
+			if((position >> shift) & 1) == 1:
+				inRow += 1
+			else:
+				inRow = 0
+
+			if inRow == 4:
+				return True
+
+
+	return False
 
 playGame()
