@@ -5,6 +5,9 @@ from samplebase import SampleBase #need to import on everything. tells argument 
 from rgbmatrix import graphics, RGBMatrix, RGBMatrixOptions
 import time
 
+# run command for this file:
+# sudo ./welcome_message.py --led-rows=32 --led-cols=64 --led-slowdown-gpio=4 
+
 options = RGBMatrixOptions()
 options.hardware_mapping = 'adafruit-hat'
 
@@ -15,7 +18,7 @@ class welcome(SampleBase):
 
     def run(self):
         wel_canvas = self.matrix.CreateFrameCanvas()
-        wel_color = graphics.Color(255,0,0) #RED
+        wel_color = graphics.Color(127,255,212) #RED=(255,0,0), CORAL=(255,127,80), FOREST GREEN=(34,129,34), AQUAMARINE=(127,255,212)
         font = graphics.Font()
         font.LoadFont('../../../fonts/7x13.bdf') #IF WE MOVE THIS FILE, WE NEED TO REWRITE THIS!!!!
         #text will take up 9 lines, cannot make smaller with this font
