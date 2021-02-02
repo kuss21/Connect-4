@@ -15,11 +15,11 @@ import time
 options = RGBMatrixOptions()
 options.hardware_mapping = 'adafruit-hat'
 
-class DrawBoard(SampleBase):
+class ConnectFour(SampleBase):
   def __init__(self, *args, **kwargs):
-    super(DrawBoard, self).__init__(*args, **kwargs)
+    super(ConnectFour, self).__init__(*args, **kwargs)
     
-  def run(self):
+  def DrawBoard(self):
     # creates a matrix called boxcanvas
     boxcanvas = self.matrix.CreateFrameCanvas()
     
@@ -88,7 +88,38 @@ class DrawBoard(SampleBase):
             boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
         # now go back to the beginning of for loop with incremented value of row_position + 3
         # ! MIGHT NEED TO HAVE A CHECKER HERE TO MAKE SURE COL_POS_Y AREN'T > ROW_COUNT ! #
+        
+  def addPiece(self):
+      # add a piece to the board
+      
+  def displayPlayersChip(self):
+      # this function will display the Player's chip moving from side to side
+      # creates a matrix called boxcanvas
+      boxcanvas = self.matrix.CreateFrameCanvas()
+    
+      # sets Player 1's color as maroon
+      playerOne = graphics.Color(128, 0, 0) 
+      # sets Player 2's color as yellow
+      playerTwo = graphics.Color(255, 255, 0)
+      
+      playerTurn = 1 # by default Player 1 will be the first to go
+      
+      #while True: !MIGHT NEED THIS WHILE LOOP
+      # set first position of the chip on the board (in the blank space above board)
+      chip_row_x1 = 0
+      chip_col_y1 = 0
+      chip_row_x2 = 0
+      chip_col_y2 = 1
 
+      if(playerTurn == 1)
+        while True:
+          # draw chip for Player 1
+          graphics.DrawLine(boxcanvas, chip_row_x1, chip_col_y1, chip_row_x2, chip_row_y2, playerOne)
+          graphics.DrawLine(boxcanvas, chip_row_x1+1, chip_col_y1, chip_row_x2+1, chip_row_y2, playerOne)
+          
+          #### !need an interrupt here! ####
+      
+      
    
 # Main Function
 if __name__=="__main__":
