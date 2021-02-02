@@ -117,7 +117,7 @@ class ConnectFour(SampleBase):
           graphics.DrawLine(boxcanvas, chip_row_x1, chip_col_y1, chip_row_x2, chip_row_y2, playerOne)
           graphics.DrawLine(boxcanvas, chip_row_x1+1, chip_col_y1, chip_row_x2+1, chip_row_y2, playerOne)
           
-          #### !need an interrupt here! ####
+          #### !need an interrupt here in a while loop! ####
       
       
    
