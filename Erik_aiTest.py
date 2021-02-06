@@ -83,6 +83,8 @@ def playGame():
 		playPiece(board, playerTurn)
 		drawBoard(board)
 
+		print(bin(combineTwoBitMask(board)))
+
 
 		#used for testing
 
@@ -164,44 +166,60 @@ def connected_four(position):
 
 #recursive code to make a decision tree
 from treelib import Node, Tree
-def create_Tree():
-	tree = Tree()
 
-	global count
-	count = 0
-	tree.create_node(count, count)
-	expandTree(count, tree, 0)
-
-
-	#recursively build tree
-	#expandTree(count, 0, tree, 0)
-
-
-	tree.show()
-
-def expandTree(node, decisionTree, depth):
-	if(depth == 3):
-		return
+def colNotFull(board, col):
+	if(board[amtOfRow][col] == Piece.BLANK):
+		return True
 	else:
-		for col in range (amtOfCol):
-			count += 1
-			decisionTree.create_node(count, count, parent=node)
-			expandTree(count, decisionTree, depth + 1)
+		return False
 
-def create_TreeNEW():
-	tree = Tree()
-	board = [[0 for i in range(amtOfCol)] for j in range(amtOfRow)]
+#Player 1 is yellow (goes first) player 2 is red
+def combineTwoBitMask(currentBoard):
+	player1Mask = get_position_mask_bitmap(currentBoard, Piece.YELLOW)
+	player2Mask = get_position_mask_bitmap(currentBoard, Piece.RED)
+	player1Mask = player1Mask*2^((amtOfRow+1)*amtOfCol)
+	fullPositionMask = player1Mask + player2Mask
+	return fullPositionMask
 
-	expandTreeNEW(tree, board)
-	tree.show()
+def create_Tree(treeBase, parent, tempBoard, player):
+	if(not endGame(tempBoard, Piece.RED) or not endGame(tempBoard, Piece.YELLOW)):
+		for i in range(amtOfCol):
+			if(colNotFull):
+				if(player == Piece.RED):
+					player = Piece.YELLOW
+				else:
+					player = Piece.RED
+				addPiece(tempBoard, i, player)
+				position = get_position_mask_bitmap(tempBoard, player)
+				tempNode = tree.get_node(position)
+				if(tempNode == None):
+					tree.create_node(position, position ,parent=parent)
+					create_Tree(treeBase, position, tempBoard, player)
+				else:
+					return
+	return
 
 
-def expandTreeNEW(tree, board):
-	tree.create_node(get_position_mask_bitmap(board), get_position_mask_bitmap(board))		
+
+
+	
 
 #function used in the main code to play the game
 ##create_Tree()
 #playGame()
-create_TreeNEW()
+
+tree = Tree()
+tree.create_node("base", "base")
+node = tree.get_node("base")
+board = [[0 for i in range(amtOfCol)] for j in range(amtOfRow)]
+for row in range(amtOfRow):
+	for col in range(amtOfCol):
+		board[row][col] = Piece.BLANK
+
+#create_Tree(tree, "base", board, Piece.RED)
+
+tree.create_node("test","test",parent="base", data=YellowPieces("534"),data=RedPieces("245"))
+
+tree.show()
 
 
