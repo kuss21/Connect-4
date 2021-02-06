@@ -110,6 +110,9 @@ class ConnectFour(SampleBase):
       chip_col_y1 = 0
       chip_row_x2 = 0
       chip_col_y2 = 1
+      # set bounds of the board
+      board_bound_right = 41
+      board_bound_left = 0
 
       if(playerTurn == 1)
         while True:
@@ -118,8 +121,72 @@ class ConnectFour(SampleBase):
           graphics.DrawLine(boxcanvas, chip_row_x1+1, chip_col_y1, chip_row_x2+1, chip_row_y2, playerOne)
           
           #### !need an interrupt here in a while loop! ####
-      
-      
+          if ((previousInputLeft) and pieceLeft):
+            print("piece moved left")
+            # previousInputLeft = pieceLeft
+            time.sleep(0.05)
+            if((chip_row_x1 == board_bound_left) and (chip_row_x2 == board_bound_left)):
+              chip_row_x1 = board_bound_left
+              chip_row_x2 = board_bound_left
+            else:
+              chip_row_x1 -= 4
+              chip_row_x2 -= 4
+          elif ((not previousInputRight) and pieceRight):
+            print("piece moved right")
+            # previousInputRight = pieceRight
+            time.sleep(0.05)
+            if((chip_row_x1 == board_bound_right) and (chip_row_x2 == board_bound_right)):
+              chip_row_x1 = board_bound_right
+              chip_row_x2 = board_bound_right
+            else:
+              chip_row_x1 += 4
+              chip_row_x2 += 4
+          elif ((not previousInputDrop) and dropPiece):
+            print("piece has been dropped")
+            #previousInputDrop = dropPiece
+            time.sleep(0.05)
+            # set the turn to be the next player and break to exit while loop
+            playerTurn = 2
+            # call addPiece() function to drop piece into the column
+            addPiece()
+            break
+            
+      if(playerTurn == 2)
+        while True:
+          # draw chip for Player 1
+          graphics.DrawLine(boxcanvas, chip_row_x1, chip_col_y1, chip_row_x2, chip_row_y2, playerOne)
+          graphics.DrawLine(boxcanvas, chip_row_x1+1, chip_col_y1, chip_row_x2+1, chip_row_y2, playerOne)
+          
+          #### !need an interrupt here in a while loop! ####
+          if ((previousInputLeft) and pieceLeft):
+            print("piece moved left")
+            # previousInputLeft = pieceLeft
+            time.sleep(0.05)
+            if((chip_row_x1 == board_bound_left) and (chip_row_x2 == board_bound_left)):
+              chip_row_x1 = board_bound_left
+              chip_row_x2 = board_bound_left
+            else:
+              chip_row_x1 -= 4
+              chip_row_x2 -= 4
+          elif ((not previousInputRight) and pieceRight):
+            print("piece moved right")
+            # previousInputRight = pieceRight
+            time.sleep(0.05)
+            if((chip_row_x1 == board_bound_right) and (chip_row_x2 == board_bound_right)):
+              chip_row_x1 = board_bound_right
+              chip_row_x2 = board_bound_right
+            else:
+              chip_row_x1 += 4
+              chip_row_x2 += 4
+          elif ((not previousInputDrop) and dropPiece):
+            print("piece has been dropped")
+            #previousInputDrop = dropPiece
+            time.sleep(0.05)
+            # set the turn to be the next player and break to exit while loop
+            playerTurn = 1
+            # call addPiece() function to drop piece into the column
+            addPiece()
+            break
    
 # Main Function
 if __name__=="__main__":
