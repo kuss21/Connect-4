@@ -167,42 +167,62 @@ def connected_four(position):
 #recursive code to make a decision tree
 from treelib import Node, Tree
 
+def treeIdentifier(board):
+	bitmap = ""
+	for col in range (0, amtOfCol, 1):
+		for row in range (0, amtOfRow, 1):
+			if board[row][col] == Piece.RED:
+				bitmap = "R" + bitmap
+			elif board[row][col] == Piece.YELLOW:
+				bitmap = "Y" + bitmap
+			else:
+				bitmap = "O" + bitmap
+	return bitmap
+
 def colNotFull(board, col):
-	if(board[amtOfRow][col] == Piece.BLANK):
+	if(board[amtOfRow - 1][col] == Piece.BLANK):
 		return True
 	else:
 		return False
 
-#Player 1 is yellow (goes first) player 2 is red
-def combineTwoBitMask(currentBoard):
-	player1Mask = get_position_mask_bitmap(currentBoard, Piece.YELLOW)
-	player2Mask = get_position_mask_bitmap(currentBoard, Piece.RED)
-	player1Mask = player1Mask*2^((amtOfRow+1)*amtOfCol)
-	fullPositionMask = player1Mask + player2Mask
-	return fullPositionMask
-
+#issue was that no arguments were passed into the colNotFull. Corrections from Abbasi were noted and tweaked back to original due to our own error
+#from the start
 def create_Tree(treeBase, parent, tempBoard, player):
-	if(not endGame(tempBoard, Piece.RED) or not endGame(tempBoard, Piece.YELLOW)):
-		for i in range(amtOfCol):
-			if(colNotFull):
-				if(player == Piece.RED):
-					player = Piece.YELLOW
-				else:
-					player = Piece.RED
-				addPiece(tempBoard, i, player)
-				position = get_position_mask_bitmap(tempBoard, player)
-				tempNode = tree.get_node(position)
-				if(tempNode == None):
-					tree.create_node(position, position ,parent=parent)
-					create_Tree(treeBase, position, tempBoard, player)
-				else:
-					return
-	return
+	#the .copy function is suppose to make a shallow
+	if(player == Piece.RED):
+		player = Piece.YELLOW
+	else:
+		player = Piece.RED
+
+	for i in range(amtOfCol):
+
+		if(endGame(tempBoard, Piece.RED) or endGame(tempBoard, Piece.YELLOW)):
+			print("end game found")
+			return
+		if(colNotFull(tempBoard,i)):
+
+			#used to print out the two boards(original and temp) to keep track of what is happening
+
+			addPiece(tempBoard, i, player)
+			print("temp")
+			drawBoard(tempBoard)
+			position = treeIdentifier(tempBoard)
+			tempNode = tree.get_node(position)
+			if(tempNode == None):
+				tree.create_node(position, position, parent=parent)
+				#create_Tree(treeBase, position, tempBoard, player)
+		removePiece(tempBoard, i)
 
 
+def removePiece(board, col):
+	if(board[0][col] != Piece.BLANK):
+		for i in range(amtOfRow):
+			if(board[i][col] == Piece.BLANK):
+				board[i-1][col] = Piece.BLANK
+				return
+		board[amtOfRow - 1][col] = Piece.BLANK
+		return
 
-
-	
 
 #function used in the main code to play the game
 ##create_Tree()
@@ -216,9 +236,7 @@ for row in range(amtOfRow):
 	for col in range(amtOfCol):
 		board[row][col] = Piece.BLANK
 
-#create_Tree(tree, "base", board, Piece.RED)
-
-tree.create_node("test","test",parent="base", data=YellowPieces("534"),data=RedPieces("245"))
+create_Tree(tree, "base", board, Piece.RED)
 
 tree.show()
 
