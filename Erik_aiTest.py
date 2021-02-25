@@ -8,6 +8,8 @@ class Piece(Enum):
 	BLANK = 1
 	RED = 2
 	YELLOW = 3
+import sys
+print(sys.getrecursionlimit())
 
 #variables used for decision tree
 #count = 0
@@ -187,7 +189,7 @@ def colNotFull(board, col):
 
 #issue was that no arguments were passed into the colNotFull. Corrections from Abbasi were noted and tweaked back to original due to our own error
 #from the start
-def create_Tree(treeBase, parent, tempBoard, player):
+def create_Tree(treeBase, parent, tempBoard, player, leaf):
 	#the .copy function is suppose to make a shallow
 	if(player == Piece.RED):
 		player = Piece.YELLOW
@@ -210,7 +212,9 @@ def create_Tree(treeBase, parent, tempBoard, player):
 			tempNode = tree.get_node(position)
 			if(tempNode == None):
 				tree.create_node(position, position, parent=parent)
-				#create_Tree(treeBase, position, tempBoard, player)
+				if(leaf == 100):
+					return
+				create_Tree(treeBase, position, tempBoard, player, leaf + 1)
 		removePiece(tempBoard, i)
 
 
@@ -235,9 +239,12 @@ board = [[0 for i in range(amtOfCol)] for j in range(amtOfRow)]
 for row in range(amtOfRow):
 	for col in range(amtOfCol):
 		board[row][col] = Piece.BLANK
-
-create_Tree(tree, "base", board, Piece.RED)
-
+leaf = 0
+create_Tree(tree, "base", board, Piece.RED, leaf)
 tree.show()
+#file = open("tree.txt", "w")
+#file.write(tree.show())
+#file.close()
+
 
 
