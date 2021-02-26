@@ -1,5 +1,6 @@
+#virtual Connect Four board for AI testing
 #variables for size of board, if changed, need to fix the array for the board in playGame()
-amtOfRow = 7
+amtOfRow = 6
 amtOfCol = 10
 from enum import Enum, unique
 @unique
@@ -7,6 +8,11 @@ class Piece(Enum):
 	BLANK = 1
 	RED = 2
 	YELLOW = 3
+import sys
+print(sys.getrecursionlimit())
+
+#variables used for decision tree
+#count = 0
 
 #functions
 #drawBoard draws the current state of the board, the board that is passed stores ' ', 'X', and 'O' 
@@ -79,9 +85,15 @@ def playGame():
 		playPiece(board, playerTurn)
 		drawBoard(board)
 
+		print(bin(combineTwoBitMask(board)))
+
 
 		#used for testing
 
+
+
+
+#AI Parts
 #changing an array into a bitstring
 #code is referenced from TowardsDataScience.com
 def get_position_mask_bitmap(board, player):
@@ -96,6 +108,7 @@ def get_position_mask_bitmap(board, player):
 		#this is similar to adding an extra row full of blanks 
 		bitmap = "0" + bitmap
 	return int(bitmap, 2)
+
 
 #check for wins on the board
 #code is referenced from TowardsDataScience.com
@@ -153,4 +166,85 @@ def connected_four(position):
 
 	return False
 
-playGame()
+#recursive code to make a decision tree
+from treelib import Node, Tree
+
+def treeIdentifier(board):
+	bitmap = ""
+	for col in range (0, amtOfCol, 1):
+		for row in range (0, amtOfRow, 1):
+			if board[row][col] == Piece.RED:
+				bitmap = "R" + bitmap
+			elif board[row][col] == Piece.YELLOW:
+				bitmap = "Y" + bitmap
+			else:
+				bitmap = "O" + bitmap
+	return bitmap
+
+def colNotFull(board, col):
+	if(board[amtOfRow - 1][col] == Piece.BLANK):
+		return True
+	else:
+		return False
+
+#issue was that no arguments were passed into the colNotFull. Corrections from Abbasi were noted and tweaked back to original due to our own error
+#from the start
+def create_Tree(treeBase, parent, tempBoard, player, leaf):
+	#the .copy function is suppose to make a shallow
+	if(player == Piece.RED):
+		player = Piece.YELLOW
+	else:
+		player = Piece.RED
+
+	for i in range(amtOfCol):
+
+		if(endGame(tempBoard, Piece.RED) or endGame(tempBoard, Piece.YELLOW)):
+			print("end game found")
+			return
+		if(colNotFull(tempBoard,i)):
+
+			#used to print out the two boards(original and temp) to keep track of what is happening
+
+			addPiece(tempBoard, i, player)
+			print("temp")
+			drawBoard(tempBoard)
+			position = treeIdentifier(tempBoard)
+			tempNode = tree.get_node(position)
+			if(tempNode == None):
+				tree.create_node(position, position, parent=parent)
+				if(leaf == 100):
+					return
+				create_Tree(treeBase, position, tempBoard, player, leaf + 1)
+		removePiece(tempBoard, i)
+
+
+def removePiece(board, col):
+	if(board[0][col] != Piece.BLANK):
+		for i in range(amtOfRow):
+			if(board[i][col] == Piece.BLANK):
+				board[i-1][col] = Piece.BLANK
+				return
+		board[amtOfRow - 1][col] = Piece.BLANK
+		return
+
+
+#function used in the main code to play the game
+##create_Tree()
+#playGame()
+
+tree = Tree()
+tree.create_node("base", "base")
+node = tree.get_node("base")
+board = [[0 for i in range(amtOfCol)] for j in range(amtOfRow)]
+for row in range(amtOfRow):
+	for col in range(amtOfCol):
+		board[row][col] = Piece.BLANK
+leaf = 0
+create_Tree(tree, "base", board, Piece.RED, leaf)
+tree.show()
+#file = open("tree.txt", "w")
+#file.write(tree.show())
+#file.close()
+
+
+
