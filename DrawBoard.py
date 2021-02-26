@@ -12,6 +12,9 @@ import time
 # one row is 2x42
 # The chip size is 2x2 pixels
 
+# command to run program
+# sudo ./DrawBoard.py --led-rows=32 --led-cols=64 --led-slowdown-gpio=4
+
 options = RGBMatrixOptions()
 options.hardware_mapping = 'adafruit-hat'
 
