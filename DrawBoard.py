@@ -15,6 +15,8 @@ import time
 # command to run program
 # sudo ./DrawBoard.py --led-rows=32 --led-cols=64 --led-slowdown-gpio=4
 
+##!!NEED TO MAKE SURE THAT IN THE FINAL VERSION THAT MAIN DEF IS CALLED RUN!!
+
 options = RGBMatrixOptions()
 options.hardware_mapping = 'adafruit-hat'
 
@@ -22,7 +24,8 @@ class ConnectFour(SampleBase):
   def __init__(self, *args, **kwargs):
     super(ConnectFour, self).__init__(*args, **kwargs)
     
-  def DrawBoard(self):
+  def run(self):
+    print("in DrawBoard function")
     # creates a matrix called boxcanvas
     boxcanvas = self.matrix.CreateFrameCanvas()
     
@@ -91,14 +94,18 @@ class ConnectFour(SampleBase):
             boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
         # now go back to the beginning of for loop with incremented value of row_position + 3
         # ! MIGHT NEED TO HAVE A CHECKER HERE TO MAKE SURE COL_POS_Y AREN'T > ROW_COUNT ! #
+        displayPlayersChip()
         
   def addPiece(self):
       # add a piece to the board
+      print("Made it to addPiece function")
       
   def displayPlayersChip(self):
       # this function will display the Player's chip moving from side to side
       # creates a matrix called boxcanvas
       boxcanvas = self.matrix.CreateFrameCanvas()
+
+      print("beginning of displayPlayersChip function")
     
       # sets Player 1's color as maroon
       playerOne = graphics.Color(128, 0, 0) 
@@ -117,7 +124,7 @@ class ConnectFour(SampleBase):
       board_bound_right = 41
       board_bound_left = 0
 
-      if(playerTurn == 1)
+      if(playerTurn == 1):
         while True:
           # draw chip for Player 1
           graphics.DrawLine(boxcanvas, chip_row_x1, chip_col_y1, chip_row_x2, chip_row_y2, playerOne)
@@ -154,7 +161,7 @@ class ConnectFour(SampleBase):
             addPiece()
             break
             
-      if(playerTurn == 2)
+      elif(playerTurn == 2):
         while True:
           # draw chip for Player 1
           graphics.DrawLine(boxcanvas, chip_row_x1, chip_col_y1, chip_row_x2, chip_row_y2, playerOne)
@@ -187,12 +194,14 @@ class ConnectFour(SampleBase):
             time.sleep(0.05)
             # set the turn to be the next player and break to exit while loop
             playerTurn = 1
-            # call addPiece() function to drop piece into the column
+            # call addPiece() functio to drop piece into the column
             addPiece()
             break
+
+#displayPlayersChip()
    
-# Main Function
+#Main Function
 if __name__=="__main__":
-    test_frank = DrawBoard()
+    test_frank = ConnectFour()
     if (not test_frank.process()):
-        test_frank.print_help()
+       test_frank.print_help()
