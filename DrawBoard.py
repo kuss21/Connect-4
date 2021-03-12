@@ -94,13 +94,15 @@ class ConnectFour(SampleBase):
             boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
         # now go back to the beginning of for loop with incremented value of row_position + 3
         # ! MIGHT NEED TO HAVE A CHECKER HERE TO MAKE SURE COL_POS_Y AREN'T > ROW_COUNT ! #
-        displayPlayersChip()
+        #displayPlayersChip()
+
+        # while loop that constantly checks for input of button press
         
-  def addPiece(self):
+  def addPiece():
       # add a piece to the board
       print("Made it to addPiece function")
       
-  def displayPlayersChip(self):
+  def displayPlayersChip():
       # this function will display the Player's chip moving from side to side
       # creates a matrix called boxcanvas
       boxcanvas = self.matrix.CreateFrameCanvas()
@@ -195,7 +197,7 @@ class ConnectFour(SampleBase):
             # set the turn to be the next player and break to exit while loop
             playerTurn = 1
             # call addPiece() functio to drop piece into the column
-            addPiece()
+            #addPiece()
             break
 
 #displayPlayersChip()

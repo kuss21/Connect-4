@@ -11,8 +11,10 @@ prev_input = 0
 
 while True:
     leftInput = GPIO.input(5)
+    #print(leftInput)
     if (not leftInput):
         print("piece moved left")
+        print(leftInput)
         time.sleep(1)
         
     downInput = GPIO.input(12)
