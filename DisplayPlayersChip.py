@@ -66,13 +66,22 @@ class DisplayChip(SampleBase):
                         chip_row_x2 -= 4
                         # test to see how to call a function
                         # it needs to be outside of class definition!
-                        test_function()
+                        testFunc = Test_Function()
+                        testFunc.test_function(chip_canvas)
                         break
                 else:
                     break 
 
-def test_function():
-        print("in test function")
+
+class Test_Function(SampleBase):
+    def __init__(self, *args, **kwargs):
+            super(Test_Function, self).__init__(*args, **kwargs)
+
+    def test_function(self, canvas):
+            print("in test function")
+            lineColor = graphics.Color(255, 0, 255)
+            graphics.DrawLine(canvas, 0, 0, 0, 40, lineColor)
+            canvas = self.matrix.SwapOnVSync(canvas)
 
 #Main Function
 if __name__=="__main__":
