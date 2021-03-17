@@ -45,6 +45,7 @@ class DisplayChip(SampleBase):
         barColor = graphics.Color(0,0,0)
         chipColor = playerOneColor #initialize chip color for the first player
         
+        colValue = 38
 
         while True:
 
@@ -72,6 +73,7 @@ class DisplayChip(SampleBase):
                     else:
                         chip_row_x1 -= 4
                         chip_row_x2 -= 4
+                        colValue -=4
                         # test to see how to call a function
                         # it needs to be outside of class definition!
                         # testFunc = Test_Function()
@@ -88,6 +90,7 @@ class DisplayChip(SampleBase):
                     else:
                         chip_row_x1 += 4
                         chip_row_x2 += 4
+                        colValue +=4
                         chip_canvas = self.matrix.SwapOnVSync(chip_canvas)
                         break
                 elif(not selectInput):
