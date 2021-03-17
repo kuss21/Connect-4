@@ -6,8 +6,11 @@ import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 
 GPIO.setup(18,GPIO.IN) # left button (white wire/red button)
-GPIO.setup(19,GPIO.IN) # select button (blue wire/blue button)
-GPIO.setup(25,GPIO.IN) # right button (orange wire/red button)
+GPIO.setup(19,GPIO.IN) # right button (orange wire/red button)
+GPIO.setup(25,GPIO.IN) # select button (blue wire/blue button) 
+
+#run command
+# sudo ./DisplayPlayersChip.py --led-cols=64 --led-rows=32 --led-slowdown-gpio=4
 
 # Function for displaying the Player's chip
 
@@ -23,22 +26,25 @@ class DisplayChip(SampleBase):
         chip_canvas = self.matrix.CreateFrameCanvas()
 
         #chipColor = graphics.Color(0, 0, 255)
-        chipColor = graphics.Color(128,0,128)
+        playerOneColor = graphics.Color(255, 0, 0)
+        playerTwoColor = graphics.Color(0,0,255)
 
         # first position of chip
-        chip_row_x1 = 40
+        chip_row_x1 = 38
         chip_col_y1 = 0
-        chip_row_x2 = 40
+        chip_row_x2 = 38
         chip_col_y2 = 1
         # set bounds of the board
-        board_bound_right = 40
-        board_bound_left = 0
+        board_bound_right = 38
+        board_bound_left = 2
         # bounds for a line of grey and color graphics of black 
         bar_row_x1 = 0
         bar_col_y1 = 0
         bar_row_x2 = 41
         bar_col_y2 = 0 
         barColor = graphics.Color(0,0,0)
+        chipColor = playerOneColor #initialize chip color for the first player
+        
 
         while True:
 
@@ -54,9 +60,11 @@ class DisplayChip(SampleBase):
 
             while True:
                 leftInput = GPIO.input(18)
+                rightInput = GPIO.input(19)
+                selectInput = GPIO.input(25)
                 if(not leftInput):
                     print("piece moved left")
-                    time.sleep(1)
+                    time.sleep(0.5) #changed time sleep to half a second
                     if((chip_row_x1 == board_bound_left) and (chip_row_x2 == board_bound_left)):
                         chip_row_x1 = board_bound_left
                         chip_row_x2 = board_bound_left
@@ -66,14 +74,36 @@ class DisplayChip(SampleBase):
                         chip_row_x2 -= 4
                         # test to see how to call a function
                         # it needs to be outside of class definition!
-                        testFunc = Test_Function()
-                        testFunc.run(chip_canvas)
+                        # testFunc = Test_Function()
+                        # testFunc.run(chip_canvas)
                         chip_canvas = self.matrix.SwapOnVSync(chip_canvas)
+                        break
+                elif(not rightInput):
+                    print("piece moved right")
+                    time.sleep(0.5) #see if this is enough time
+                    if((chip_row_x1 == board_bound_right) and (chip_row_x2 ==board_bound_right)):
+                        chip_row_x1 = board_bound_right
+                        chip_row_x2 = board_bound_right
+                        break
+                    else:
+                        chip_row_x1 += 4
+                        chip_row_x2 += 4
+                        chip_canvas = self.matrix.SwapOnVSync(chip_canvas)
+                        break
+                elif(not selectInput):
+                    print("piece selected")
+                    time.sleep(0.5)
+                    if(chipColor is playerOneColor):
+                        chipColor = playerTwoColor
+                        break
+                    else:
+                        chipColor = playerOneColor
                         break
                 else:
                     break 
 
-
+'''
+DELANEY COMMENTED THIS SECTION. NOT SURE ABOUT FUNCTIONALITY
 class Test_Function(SampleBase):
     def __init__(self, *args, **kwargs):
             super(Test_Function, self).__init__(*args, **kwargs)
@@ -82,6 +112,7 @@ class Test_Function(SampleBase):
             print("in test function")
             lineColor = graphics.Color(255, 0, 255)
             graphics.DrawLine(canvas, 0, 0, 0, 40, lineColor)
+'''
             
 #Main Function
 if __name__=="__main__":
