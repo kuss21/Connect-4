@@ -34,6 +34,7 @@ options.hardware_mapping = 'adafruit-hat'
 class DisplayChip(SampleBase):
     def __init__(self, *args, **kwargs):
         super(DisplayChip, self).__init__(*args, **kwargs)
+        self.parser.add_argument('-t', default='Connect 4')
 
     def run(self):
         print("in function call")
@@ -80,7 +81,10 @@ class DisplayChip(SampleBase):
                 selectInput = GPIO.input(25)
                 if(not leftInput):
                     print("piece moved left")
-                    time.sleep(0.5) #changed time sleep to half a second
+                    start = time.time()
+                    while time.time() - start < 0.5:
+                        continue
+                    #time.sleep(0.5) #changed time sleep to half a second
                     if((chip_row_x1 == board_bound_left) and (chip_row_x2 == board_bound_left)):
                         chip_row_x1 = board_bound_left
                         chip_row_x2 = board_bound_left
@@ -99,7 +103,10 @@ class DisplayChip(SampleBase):
                         break
                 elif(not rightInput):
                     print("piece moved right")
-                    time.sleep(0.5) #see if this is enough time
+                    start = time.time()
+                    while time.time() - start < 0.5:
+                        continue
+                    #time.sleep(0.5) #see if this is enough time
                     if((chip_row_x1 == board_bound_right) and (chip_row_x2 ==board_bound_right)):
                         chip_row_x1 = board_bound_right
                         chip_row_x2 = board_bound_right
@@ -114,9 +121,13 @@ class DisplayChip(SampleBase):
                         break
                 elif(not selectInput):
                     print("piece selected")
-                    time.sleep(0.5)
-                    addPieceFunc = addPiece()
-                    addPieceFunc.run(chip_canvas, colValue)
+                    start = time.time()
+                    while time.time() - start < 0.5:
+                        continue
+                    #time.sleep(0.5)
+                    #addPieceFunc = addPiece()
+                    self.addPiece(chip_canvas, colValue)
+                    chip_canvas = self.matrix.SwapOnVSync(chip_canvas)
                     if(chipColor is playerOneColor):
                         chipColor = playerTwoColor
                         break
@@ -130,14 +141,14 @@ class DisplayChip(SampleBase):
 
 #function to add Piece
 
-class addPiece(SampleBase):
-    def __init__(self, *args, **kwargs):
-        super(addPiece, self).__init__(*args, **kwargs)
+#class addPiece(SampleBase):
+#    def __init__(self, *args, **kwargs):
+#        super(addPiece, self).__init__(*args, **kwargs)
 
-    def run(self, canvas, column): # WILL NEED TO ADD WHICH PLAYER'S TURN IT IS
+    def addPiece(self, canvas, column): # WILL NEED TO ADD WHICH PLAYER'S TURN IT IS
         print("in addPiece function")
 
-        #chip_canvas = self.matrix.CreateFrameCanvas()
+        canvas = self.matrix.CreateFrameCanvas()
 
         # color of player's chips
         playerOneColor = graphics.Color(255,0,0) # red
@@ -162,14 +173,14 @@ class addPiece(SampleBase):
             #print("value of column:", column)
             
             if(column >= 0 and column < amtOfCol):
-                #canvas = self.matrix.SwapOnVSync(canvas)
+                canvas = self.matrix.SwapOnVSync(canvas)
              
                 for row in range(amtOfRow):
                     print("in for loop")
                     if(board[amtOfRow-1][column] is not Piece.BLANK):
                         print("column full", board[amtOfRow-1][column])
                         time.sleep(10)
-                        #canvas = self.matrix.SwapOnVSync(canvas)
+                        canvas = self.matrix.SwapOnVSync(canvas)
                         break
                     if(board[row][column] == Piece.BLANK):
                         board[row][column] = player
@@ -182,7 +193,7 @@ class addPiece(SampleBase):
                             #print("y coord:", y_coord)
 
                             graphics.DrawLine(canvas, original_x+(column*4)+1, original_y-(row*4), original_x+(column*4)+1, original_y-(row*4)+1, playerOneColor)
-                            #canvas = self.matrix.SwapOnVSync(canvas)
+                            canvas = self.matrix.SwapOnVSync(canvas)
                             break
                 break        
 
