@@ -17,7 +17,7 @@ from enum import Enum, unique
 class Piece(Enum):
 	BLANK = 1
 	RED = 2
-	BLUE = 3
+	YELLOW = 3
 
 board = [[0 for i in range(amtOfCol)] for j in range(amtOfRow)]
 for row in range(amtOfRow):
@@ -29,7 +29,7 @@ PlayerTURN = [1]
 # MAIN Function with everything being displayed and game functionality
 
 # command to run:
-## sudo python3 Connect4.py --led-rows=32 --led-cols=64 --led-slowdown-gpio=4 --led-brightness =80
+## sudo python3 Connect4.py --led-rows=32 --led-cols=64 --led-slowdown-gpio=4 --led-brightness=80
 
 # there are 10 columns
 # one column is 2x32
@@ -49,29 +49,32 @@ class ConnectFour(SampleBase):
 
     #endGame checks to see if the game is done by seeing if there are any empty spaces left (currently doesn't
     #check for wins (lines of four))
-    def endGame(self):
-        if(self.connected_four(self.get_position_mask_bitmap())):
+    def endGame(self, player):
+        if(self.connected_four(self.get_position_mask_bitmap(player))):
+            print("WIN")
             return True
 
         for row in range(amtOfRow):
             for col in range(amtOfCol):
                 if(board[row][col] == Piece.BLANK):
                     return False
+        print("TIE")
         return True
 
     #changing an array into a bitstring
     #code is referenced from TowardsDataScience.com
-    def get_position_mask_bitmap(self):
+    def get_position_mask_bitmap(self, player):
         bitmap = ""
         for col in range (0, amtOfCol, 1):
             for row in range (0, amtOfRow, 1):
-                if board[row][col] == PlayerTURN:
+                if board[row][col] == player:
                     bitmap = "1" + bitmap
                 else:
                     bitmap = "0" + bitmap
 		#add an extra zero into the bitstring to help with checking for diagonal wins
 		#this is similar to adding an extra row full of blanks 
                 bitmap = "0" + bitmap
+        #print(int(bitmap, 2))
         return int(bitmap, 2)
 
     #check for wins on the board
@@ -142,15 +145,20 @@ class ConnectFour(SampleBase):
         print("in DrawBoard function")
 	# creates a matrix called boxcanvas
         boxcanvas = self.matrix.CreateFrameCanvas()
+
+        # define a variable for player
+        player = Piece.RED
 	   
         # sets boardColor of rows and columns as purple/violet
         boardColor = graphics.Color(133, 127, 148)
 	    
         # increment amount
         inc_amt = 4
-	    
+	
+        #print(self.get_position_mask_bitmap())
+
 	# every time it goes to redraw the board, it'll check for a winner
-        while(self.endGame() == False):
+        while(True):
 	    # postion variables for drawing the board
 	    # position for the columns
 	    # this sets the first column at (0,2) and y = (0,31) (it's a straight line down)
@@ -237,8 +245,10 @@ class ConnectFour(SampleBase):
             colValue = amtOfCol - 1
 
 	    # everytime it has to redraw the Player's chip or a placed chip, it'll check if there's a winner
-            while(self.endGame() == False):
-                print(self.endGame())
+            while(self.endGame(player) == False):
+                #if(self.endGame(player) is True):
+                #    print(self.endGame())
+                #    break
                 boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
 	        # draw a black line which will erase anything in the chip zone
                 graphics.DrawLine(boxcanvas, bar_row_x1, bar_col_y1, bar_row_x2, bar_col_y2, barColor)
@@ -305,20 +315,24 @@ class ConnectFour(SampleBase):
 
 	                # call function to add a piece into the board
                         addPieceFunc = addPiece()
-                        addPieceFunc.run(boxcanvas, colValue)
+                        addPieceFunc.run(boxcanvas, colValue, player)
 
 	                # if the column is full, you don't want to change players or the chipColor
                         if(board[amtOfRow - 1][colValue] is Piece.BLANK):
                             if(chipColor is playerOneColor):
                                 chipColor = playerTwoColor
+                                player = Piece.YELLOW
                                 break
                             else:
                                 chipColor = playerOneColor
+                                player = Piece.RED
                                 break
                         else:
                             break
                     else:
                         break 
+        while True:
+            print("Done")
 	
         
            
@@ -326,7 +340,7 @@ class addPiece(SampleBase):
     def __init__(self, *args, **kwargs):
         super(addPiece, self).__init__(*args, **kwargs)
 
-    def run(self, canvas, column): # WILL NEED TO ADD WHICH PLAYER'S TURN IT IS
+    def run(self, canvas, column, player): # WILL NEED TO ADD WHICH PLAYER'S TURN IT IS
         print("in addPiece function")
 
         #chip_canvas = self.matrix.CreateFrameCanvas()
@@ -340,7 +354,7 @@ class addPiece(SampleBase):
             player = Piece.RED
             PlayerTURN[0] += 1
         else:
-            player = Piece.BLUE
+            player = Piece.YELLOW
             PlayerTURN[0] -= 1
         #print(player)
 
@@ -363,7 +377,7 @@ class addPiece(SampleBase):
                 #canvas = self.matrix.SwapOnVSync(canvas)
              
                 for row in range(amtOfRow):
-                    print("in for loop")
+                    #print("in for loop")
                     if(board[amtOfRow-1][column] is not Piece.BLANK):
                         print("column full", board[amtOfRow-1][column])
 
@@ -383,10 +397,10 @@ class addPiece(SampleBase):
                             graphics.DrawLine(canvas, original_x+(column*4)+1, original_y-(row*4), original_x+(column*4)+1, original_y-(row*4)+1, playerOneColor)
                             #canvas = self.matrix.SwapOnVSync(canvas)
 
-                            player = Piece.BLUE
+                            player = Piece.YELLOW
                             print("setting player to ", player)
                             break
-                        elif(player == Piece.BLUE):
+                        elif(player == Piece.YELLOW):
                             print("drawing blue chip in row:", row)
                             graphics.DrawLine(canvas, original_x+(column*4), original_y-(row*4), original_x+(column*4),  original_y-(row*4)+1, playerTwoColor)
                             #x_coord = original_x+(col*4)
