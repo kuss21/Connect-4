@@ -8,8 +8,8 @@ class Piece(Enum):
 	BLANK = 1
 	RED = 2
 	YELLOW = 3
-import sys
-print(sys.getrecursionlimit())
+
+import random
 
 #variables used for decision tree
 #count = 0
@@ -166,6 +166,101 @@ def connected_four(position):
 
 	return False
 
+def connected_three(position):
+	#check for win vertical 
+	for col in range(amtOfCol):
+		inRow = 0
+		for index in range(amtOfRow + 1):
+			shift = (col * (amtOfRow + 1)) + index
+			if((position >> shift) & 1) == 1:
+				inRow += 1
+			else:
+				inRow = 0
+
+			if inRow == 3:
+				return True
+
+	#check for win horizontal
+	for row in range(amtOfRow):
+		inRow = 0
+		for index in range(amtOfCol):
+			shift = (row) + (index * (amtOfRow + 1))
+			if((position >> shift) & 1) == 1:
+				inRow += 1
+			else:
+				inRow = 0
+
+			if inRow == 3:
+				return True
+
+	#check for bottom left to top right diagonal
+	for row in range(amtOfRow + 2):
+		for col in range(amtOfCol - 1):
+			shift = row + (col * (amtOfRow + 2))
+			if((position >> shift) & 1) == 1:
+				inRow += 1
+			else:
+				inRow = 0
+
+			if inRow == 3:
+				return True
+
+	#check for top left to bottom right diagonal
+	for row in range(amtOfRow):
+		for col in range(amtOfCol + 2):
+			shift = row + (col * amtOfRow)
+			if((position >> shift) & 1) == 1:
+				inRow += 1
+			else:
+				inRow = 0
+
+			if inRow == 3:
+				return True
+
+
+	return False
+
+def removePiece(board, col):
+	if(board[0][col] != Piece.BLANK):
+		for i in range(amtOfRow):
+			if(board[i][col] == Piece.BLANK):
+				board[i-1][col] = Piece.BLANK
+				return
+		board[amtOfRow - 1][col] = Piece.BLANK
+		return
+
+def comMove(board):
+	yellowMap = get_position_mask_bitmap(board, Piece.YELLOW)
+	redMap = get_position_mask_bitmap(board, Piece.RED)
+
+
+	if(connected_three(yellowMap) == True):
+		for col in range(amtOfCol):
+			addPiece(board, col, Piece.Yellow)
+			yellowMap = get_position_mask_bitmap(board, Piece.YELLOW)
+			if(connected_four(yellowMap) == True):
+				return col
+			removePiece(board, col)
+
+	if(connected_three(redMap) == True):
+		for col in range(amtOfCol):
+			addPiece(board, col, Piece.RED)
+			redMap = get_position_mask_bitmap(board, Piece.RED)
+			if(connected_four(redMap) == True):
+				return col
+			removePiece(board, col)
+
+	return random.randint(0,9)
+
+def colNotFull(board, col):
+	if(board[amtOfRow - 1][col] == Piece.BLANK):
+		return True
+	else:
+		return False
+
+
+#everything below is not used (I think)
+
 #recursive code to make a decision tree
 from treelib import Node, Tree
 
@@ -181,70 +276,86 @@ def treeIdentifier(board):
 				bitmap = "O" + bitmap
 	return bitmap
 
-def colNotFull(board, col):
-	if(board[amtOfRow - 1][col] == Piece.BLANK):
-		return True
-	else:
-		return False
-
 #issue was that no arguments were passed into the colNotFull. Corrections from Abbasi were noted and tweaked back to original due to our own error
 #from the start
 def create_Tree(treeBase, parent, tempBoard, player, leaf):
-	#the .copy function is suppose to make a shallow
+	#leaf is used to see how deep the tree will be and to have a set stopping point that can be controlled. The value of leaf has been changed
+	#to try and find a depth that is deep enough to evaluate wins for the AI. Leaf is updated when create_tree is called again
+	if(leaf==1):
+		return
+	#alternate the player color to account for turns
 	if(player == Piece.RED):
 		player = Piece.YELLOW
 	else:
 		player = Piece.RED
 
-	for i in range(amtOfCol):
+	#randomly select 2 column to place the current players piece. This value can be changed to increase or decrease the number of children
+	#a current state has
+	for i in range(10):
+		#randomCol = random.randint(0,9)
 
+		#check to see if the current state is an 4 in a row or full for either color
 		if(endGame(tempBoard, Piece.RED) or endGame(tempBoard, Piece.YELLOW)):
-			print("end game found")
 			return
+
+		#check to see if the current column the piece is going to be dropped in is full
 		if(colNotFull(tempBoard,i)):
-
-			#used to print out the two boards(original and temp) to keep track of what is happening
-
+			#if the column is not full, add the piece to that column
 			addPiece(tempBoard, i, player)
-			print("temp")
-			drawBoard(tempBoard)
+
+			#gets the binary state of the board 
 			position = treeIdentifier(tempBoard)
+			#checks to see if the binary state is already in the tree
 			tempNode = tree.get_node(position)
 			if(tempNode == None):
+				#if the binary state is not in the tree, create the node to be added to the tree
 				tree.create_node(position, position, parent=parent)
-				if(leaf == 100):
-					return
+				#add the node to the tree and increase leaf ccount by 1 (which represents tree depth)
 				create_Tree(treeBase, position, tempBoard, player, leaf + 1)
+		#remove the temp piece that was added becasue the state with the piece is already passed through the previous function call
 		removePiece(tempBoard, i)
 
 
-def removePiece(board, col):
-	if(board[0][col] != Piece.BLANK):
-		for i in range(amtOfRow):
-			if(board[i][col] == Piece.BLANK):
-				board[i-1][col] = Piece.BLANK
-				return
-		board[amtOfRow - 1][col] = Piece.BLANK
+
+
+def score_tree(board, player):
+	if(endGame(board, Piece.RED) or endGame(board, Piece.YELLOW)):
 		return
 
+	for i in range(10):
+		if(colNotFull(board,i)):
+			addPiece(board, i, player)
+			position = get_position_mask_bitmap(board, player)
+			win = connected_three(position)
+			removePiece(tempBoard,i)
+			
+			if(win == True):
+				return i
+
+	while(True)
+		number = random.randint(0,9)
+		if(colNotFull(board, number)):
+			return random.randint(0,9)
 
 #function used in the main code to play the game
 ##create_Tree()
 #playGame()
 
+#create a tree to be used for the decision tree
 tree = Tree()
+#set the base and get the base node to be passed into the create tree function
 tree.create_node("base", "base")
 node = tree.get_node("base")
+#create a board to be used to keep track of the board states that the AI will go through
 board = [[0 for i in range(amtOfCol)] for j in range(amtOfRow)]
 for row in range(amtOfRow):
 	for col in range(amtOfCol):
 		board[row][col] = Piece.BLANK
+#set the leaf value to 0 that will keep track of the tree's depth
 leaf = 0
+#start the recursive call of create_tree
 create_Tree(tree, "base", board, Piece.RED, leaf)
 tree.show()
-#file = open("tree.txt", "w")
-#file.write(tree.show())
-#file.close()
-
-
-
+#nodeList[] = Null 
+nodeList=tree.children("base")
+print(connected_three(nodeList[0].identifier))
