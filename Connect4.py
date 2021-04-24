@@ -26,6 +26,9 @@ for row in range(amtOfRow):
 
 PlayerTURN = [1]
 
+# global array that shows the winner
+WINNER = [0]
+
 # MAIN Function with everything being displayed and game functionality
 
 # command to run:
@@ -54,11 +57,21 @@ class ConnectFour(SampleBase):
             print("WIN")
             return True
 
+        if(self.connected_four(player) is True):
+            print("WIN")
+            if player == Piece.RED:
+                WINNER[0] = 1
+            elif player == Piece.YELLOW:
+                WINNER[0] = 2
+            return True
+
         for row in range(amtOfRow):
             for col in range(amtOfCol):
                 if(board[row][col] == Piece.BLANK):
                     return False
+        
         print("TIE")
+        WINNER[0] = 0 #means it's a tie
         return True
 
     #changing an array into a bitstring
@@ -79,59 +92,116 @@ class ConnectFour(SampleBase):
 
     #check for wins on the board
     #code is referenced from TowardsDataScience.com
-    def connected_four(self,position):
+    def connected_four(self,player): #should be position if using Erik's function
 	#check for win vertical 
-        for col in range(amtOfCol):
-            inRow = 0
-            for index in range(amtOfRow + 1):
-                shift = (col * (amtOfRow + 1)) + index
-                if((position >> shift) & 1) == 1:
-                    inRow += 1
-                else:
-                    inRow = 0
+        #for col in range(amtOfCol):
+        #    inRow = 0
+        #    for index in range(amtOfRow + 1):
+        #        shift = (col * (amtOfRow + 1)) + index
+        #        if((position >> shift) & 1) == 1:
+        #            inRow += 1
+        #        else:
+        #            inRow = 0
 
-                if inRow == 4:
-                    return True
+        #        if inRow == 4:
+        #            return True
 
 	#check for win horizontal
-        for row in range(amtOfRow):
-            inRow = 0
-            for index in range(amtOfCol):
-                shift = (row) + (index * (amtOfRow + 1))
-                if((position >> shift) & 1) == 1:
-                    inRow += 1
-                else:
-                    inRow = 0
+        #for row in range(amtOfRow):
+        #    inRow = 0
+        #    for index in range(amtOfCol):
+        #        shift = (row) + (index * (amtOfRow + 1))
+        #        if((position >> shift) & 1) == 1:
+        #            inRow += 1
+        #        else:
+        #            inRow = 0
 
-                if inRow == 4:
-                    return True
+        #       if inRow == 4:
+        #            return True
 
 	#check for bottom left to top right diagonal
-        for row in range(amtOfRow + 2):
-            for col in range(amtOfCol - 1):
-                shift = row + (col * (amtOfRow + 2))
-                if((position >> shift) & 1) == 1:
-                    inRow += 1
-                else:
-                    inRow = 0
+        #for row in range(amtOfRow + 2):
+        #    for col in range(amtOfCol - 1):
+        #        shift = row + (col * (amtOfRow + 2))
+        #        if((position >> shift) & 1) == 1:
+        #            inRow += 1
+        #        else:
+        #            inRow = 0
 
-                if inRow == 4:
-                    return True
+        #        if inRow == 4:
+        #            return True
 
 	#check for top left to bottom right diagonal
-        for row in range(amtOfRow):
-            for col in range(amtOfCol + 2):
-                shift = row + (col * amtOfRow)
-                if((position >> shift) & 1) == 1:
-                    inRow += 1
+        #for row in range(amtOfRow):
+        #    for col in range(amtOfCol + 2):
+        #        shift = row + (col * amtOfRow)
+        #        if((position >> shift) & 1) == 1:
+        #            inRow += 1
+        #        else:
+        #            inRow = 0
+
+        #        if inRow == 4:
+        #            return True
+
+
+        #return False
+
+        #check vertical
+        for col in range(amtOfCol):
+            count = 0
+            for row in range(amtOfRow):
+#               if count == 4:
+                #WIN condition
+#                return True
+                if board[row][col] == player:
+                    count +=1
+                    if count == 4:
+                        return True
                 else:
-                    inRow = 0
+                    count = 0
 
-                if inRow == 4:
-                    return True
+        #check horizontal 
+        for row in range(amtOfRow):
+            count = 0
+            for col in range(amtOfCol):
+                if board[row][col] == player:
+                    count +=1
+                    if count ==4:
+                        return True
+                else:
+                    count = 0
 
+        #check diagonal R-L ##!!DIDN'T WORK!!##
+        # SWEEP FROM R-L, CHECK OUT N AS WELL
+        for col in range(amtOfCol-1,0,-1):
+            count = 0
+            for row in range(amtOfRow):
+                for n in range(7):
+                    if row+n >= amtOfRow or col-n <= 0:
+                        break
+                    if board[row+n][col-n] == player:
+                        count +=1
+                        if count == 4:
+                            return True
+                    else:
+                        count = 0
 
-        return False
+        #check diagonal L-R 
+        for col in range(amtOfCol):
+            count = 0
+            for row in range(amtOfRow):
+                #if board[row][col] ==player:
+                for n in range(7):
+                    ####### maybe 6 and see if row+n or col+n >amt col or row then break
+                    if row+n >= amtOfRow or col+n >= amtOfCol:
+                        break
+                    if board[row+n][col+n] == player:
+                        count += 1
+                        if count == 4:
+                            return True
+                    else:
+                        count = 0
+
 
     def drawBoard(self):
         for row in range(amtOfRow):
@@ -148,12 +218,86 @@ class ConnectFour(SampleBase):
         print('-----------------')
         time.sleep(1)
 
+    def welcome(self):
+        wel_canvas = self.matrix.CreateFrameCanvas()
+        wel_color = graphics.Color(255,255,0) #RED=(255,0,0), CORAL=(255,127,80), FOREST GREEN=(34,129,34), AQUAMARINE=(127,255,212)
+        one_player = graphics.Color(255,0,0) #red
+        two_player = graphics.Color(0,0,255) #blue
+        font = graphics.Font()
+        font.LoadFont('../../../fonts/7x13.bdf') #IF WE MOVE THIS FILE, WE NEED TO REWRITE THIS!!!!
+        #text will take up 9 lines, cannot make smaller with this font
+        pos_wel_x = 1 #this will make the text flush to the L
+        pos_wel_y = 9 #this will make the text flush to the top
+        wel_text = 'Connect 4'
+
+        xpos_player_1 = 16 # halfway on the left attempt
+        ypos_player = 20
+        xpos_player_2 = 48 # halfway on the right attempt
+
+        while True:
+            graphics.DrawText(wel_canvas, font, pos_wel_x, pos_wel_y, wel_color, wel_text)
+            graphics.DrawText(wel_canvas, font, xpos_player_1,ypos_player, one_player, '1') 
+            graphics.DrawText(wel_canvas, font, xpos_player_2, ypos_player, two_player, '2')
+            wel_canvas = self.matrix.SwapOnVSync(wel_canvas)
+            
+            leftInput = GPIO.input(18)
+            rightInput = GPIO.input(19)
+            selectInput = GPIO.input(25)
+
+            if(not leftInput or not rightInput): #one of the red buttons pressed, one_player option
+                start = time.time()
+                while time.time() - start < 0.5:
+                    continue
+                print("one player")
+                #call functions with AI
+            if(not selectInput): #blue button pressed, two player option
+                start = time.time()
+                while time.time() - start < 0.5:
+                    continue
+                print("two player")
+                wel_canvas.Clear()
+                wel_canvas = self.matrix.SwapOnVSync(wel_canvas)
+                break
+                #call functions without AI
+
+        # End Message function
+    def endMessage(self):
+        end_canvas = self.matrix.CreateFrameCanvas()
+        yellow_color = graphics.Color(255,255,0) ############SEND WINNER COLOR
+        red_color = graphics.Color(255,0,0) ###########SEND Loser color
+        tie_end_color = graphics.Color(128,0,255)
+        tie_color = graphics.Color(0,255,17)
+        font = graphics.Font()
+        font.LoadFont("../../../fonts/7x13.bdf")
+
+        cent_x = self.matrix.width /2
+        cent_y = self.matrix.height /2
+        
+        while True:
+            radius = 15
+            while radius > 10:
+                if WINNER[0] is 0:
+                    graphics.DrawCircle(end_canvas,cent_x,cent_y,radius,tie_end_color)
+                elif WINNER[0] is 1:
+                    graphics.DrawCircle(end_canvas, cent_x, cent_y, radius, yellow_color)
+                elif WINNER[0] is 2:
+                    graphics.DrawCircle(end_canvas,cent_x, cent_y, radius, red_color)
+                radius -=2
+                end_canvas = self.matrix.SwapOnVSync(end_canvas)
+            if WINNER[0] is 0:
+                graphics.DrawText(end_canvas,font,cent_x-10,cent_y+4,tie_color,"TIE")
+            elif WINNER[0] is 1:
+                graphics.DrawText(end_canvas,font,cent_x-10,cent_y+4,red_color,"WIN")
+            elif WINNER[0] is 2:
+                graphics.DrawText(end_canvas,font,cent_x-10,cent_y+4,yellow_color,"WIN")
+            end_canvas = self.matrix.SwapOnVSync(end_canvas)
+
     def run(self):
         # first we will want to call the Welcome Message function to display a welcome message to the player(s)
     	# this will be where we select how many players
 
     	### call WelcomeMessage definition ###
-
+        self.welcome()
 
     	# Next we want to draw the board and check if it's the end of the game (if winner)
         print("in DrawBoard function")
@@ -268,7 +412,7 @@ class ConnectFour(SampleBase):
                 #self.drawBoard()
                 #time.sleep(1)
                 if(self.endGame(player) is True):
-                    print(self.endGame(player))
+                    #print(self.endGame(player))
                     break
                 boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
 	        # draw a black line which will erase anything in the chip zone
@@ -335,32 +479,70 @@ class ConnectFour(SampleBase):
                             continue
 
 
-
 	                # if the column is full, you don't want to change players or the chipColor
                         if(board[amtOfRow - 1][colValue] is Piece.BLANK):
                             # call function to add a piece into the board
                             addPieceFunc = addPiece()
-                            addPieceFunc.run(boxcanvas, colValue, player) 
-                            if(player is Piece.RED):
-                                chipColor = playerTwoColor
-                                player = Piece.YELLOW
-                                break
+                            addPieceFunc.run(boxcanvas, colValue, player)
+                            if(self.endGame(player) is False):
+                                if(player is Piece.RED):
+                                    chipColor = playerTwoColor
+                                    player = Piece.YELLOW
+                                    break
+                                else:
+                                    chipColor = playerOneColor
+                                    player = Piece.RED
+                                    break
                             else:
-                                chipColor = playerOneColor
-                                player = Piece.RED
-                                break
+                                # if there is a winning combo
+                                boxcanvas.Clear()
+                                boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
+                                self.endMessage()
                         else:
                             break
                     else:
                         break 
             break
-        while True:
-            print("Done")
-            self.drawBoard()
-            time.sleep(10)
-	
+
+        # now we want to clear the canvas and show the End Message
+        boxcanvas.Clear()
+        boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
+        self.endMessage()
+'''
+DELETE HERE IF WORKS
+        # End Message function
+        def endMessage(self):
+            end_canvas = self.matrix.CreateFrameCanvas()
+            yellow_color = graphics.Color(0,17,255) ############SEND WINNER COLOR
+            red_color = graphics.Color(255,255,0) ###########SEND Loser color
+            tie_end_color = graphics.Color(128,0,255)
+            tie_color = graphics.Color(0,255,17)
+            font = graphics.Font()
+            font.LoadFont("../../../fonts/7x13.bdf")
+
+            cent_x = self.matrix.width /2
+            cent_y = self.matrix.height /2
         
-           
+            while True:
+                radius = 15
+                while radius > 10:
+                    if WINNER[0] is 0:
+                        graphics.DrawCircle(end_canvas,cent_x,cent_y,radius,tie_end_color)
+                    elif WINNER[0] is 1:
+                        graphics.DrawCircle(end_canvas, cent_x, cent_y, radius, yellow_color)
+                    elif WINNER[0] is 2:
+                        graphics.DrawCircle(end_canvas,cent_x, cent_y, radius, red_color)
+                    radius -=2
+                    end_canvas = self.matrix.SwapOnVSync(end_canvas)
+                if WINNER[0] is 0:
+                    graphics.DrawText(end_canvas,font,cent_x-10,cent_y+4,tie_color,"TIE")
+                elif WINNER[0] is 1:
+                    graphics.DrawText(end_canvas,font,cent_x-10,cent_y+4,red_color,"WIN")
+                elif WINNER[0] is 2:
+                    graphics.DrawText(end_canvas,font,cent_x-10,cent_y+4,yellow_color,"WIN")
+                end_canvas = self.matrix.SwapOnVSync(end_canvas)
+
+'''
 class addPiece(SampleBase):
     def __init__(self, *args, **kwargs):
         super(addPiece, self).__init__(*args, **kwargs)
@@ -433,6 +615,8 @@ class addPiece(SampleBase):
                             #player = Piece.RED
 
                             break
+                        else:
+                            print("ERROR")
                 break              
 
 
