@@ -289,6 +289,7 @@ def comMove(board):
 		for col in range(amtOfCol):
 			addPiece(board, col, Piece.Yellow)
 			if(connected_four(board, player) == True):
+				removePiece(board, col)
 				return col
 			removePiece(board, col)
 
@@ -296,6 +297,7 @@ def comMove(board):
 		for col in range(amtOfCol):
 			addPiece(board, col, Piece.RED)
 			if(connected_four(board, player) == True):
+				removePiece(board, col)
 				return col
 			removePiece(board, col)
 
