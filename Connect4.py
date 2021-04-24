@@ -144,7 +144,6 @@ class ConnectFour(SampleBase):
             for row in range(amtOfRow):
                 #if board[row][col] ==player:
                 for n in range(7):
-                    ####### maybe 6 and see if row+n or col+n >amt col or row then break
                     if row+n >= amtOfRow or col+n >= amtOfCol:
                         break
                     if board[row+n][col+n] == player:
@@ -175,7 +174,7 @@ class ConnectFour(SampleBase):
             for col in range(amtOfCol):
                 if board[row][col] == player:
                     count +=1
-                    if count ==3:
+                    if count == 3:
                         return True
                 else:
                     count = 0
@@ -211,6 +210,60 @@ class ConnectFour(SampleBase):
         # by default and if no connected 3
         return False
 
+    # function for checking for connected 2
+    def connected_two(self, player):
+        for col in range(amtOfCol):
+            count = 0
+            for row in range(amtOfRow):
+                if board[row][col] == player:
+                    count +=1
+                    if count == 2:
+                        return True
+                else:
+                    count = 0
+
+        #check horizontal 
+        for row in range(amtOfRow):
+            count = 0
+            for col in range(amtOfCol):
+                if board[row][col] == player:
+                    count +=1
+                    if count == 2:
+                        return True
+                else:
+                    count = 0
+
+        #check diagonal R-L ##!!DIDN'T WORK!!##
+        for col in range(amtOfCol-1,0,-1):
+            count = 0
+            for row in range(amtOfRow):
+                for n in range(7):
+                    if row+n >= amtOfRow or col-n <= 0:
+                        break
+                    if board[row+n][col-n] == player:
+                        count +=1
+                        if count == 2:
+                    	    return True
+                    else:
+                        count = 0
+
+	#check diagonal L-R 
+        for col in range(amtOfCol):
+            count = 0
+            for row in range(amtOfRow):
+                for n in range(7):
+                    if row+n >= amtOfRow or col+n >= amtOfCol:
+                        break
+                    if board[row+n][col+n] == player:
+                        count += 1
+                        if count == 2:
+                            return True
+                    else:
+                        count = 0
+        # by default and if no connected 2
+        return False
+
+
     def addPieceVirtual(self, column, player):
         for row in range(amtOfRow):
             if(board[row][column] == Piece.BLANK):
@@ -244,7 +297,29 @@ class ConnectFour(SampleBase):
                     return col
                 self.removePiece(col)
 
-        return random.randint(0,9) 
+        if(self.connected_two(Piece.YELLOW) == True):
+            for col in range(amtOfCol):
+                self.addPieceVirtual(col, Piece.YELLOW)
+                if(self.connected_three(Piece.YELLOW) == True):
+                    self.removePiece(col)
+                    return col
+                self.removePiece(col)
+
+        if(self.connected_two(Piece.RED) == True):
+            for col in range(amtOfCol):
+                self.addPieceVirtual(col, Piece.RED)
+                if(self.connected_three(Piece.RED) == True):
+                    self.removePiece(col)
+                    return col
+                self.removePiece(col)
+
+
+        while True:
+            number = random.randint(0,9)
+            if((board[amtOfRow-1][number] is Piece.BLANK) and board[amtOfRow-1][number] is not Piece.RED and board[amtOfRow-1][number] is not Piece.YELLOW):
+                break
+            continue
+        return number 
 
 
 
@@ -344,10 +419,25 @@ class ConnectFour(SampleBase):
             elif WINNER[0] is 2:
                 graphics.DrawText(end_canvas,font,cent_x-10,cent_y+4,yellow_color,"WIN")
             end_canvas = self.matrix.SwapOnVSync(end_canvas)
+            start = time.time()
+            while time.time() - start < 7:
+                end_canvas = self.matrix.SwapOnVSync(end_canvas)
+                continue
+            
+            end_canvas.Clear()
+            end_canvas = self.matrix.SwapOnVSync(end_canvas)
+            self.run()
+
 
     def run(self):
         # first we will want to call the Welcome Message function to display a welcome message to the player(s)
     	# this will be where we select how many players
+
+        # initialize the board to all BLANKs
+        for row in range(amtOfRow):
+            for col in range(amtOfCol):
+                board[row][col] = Piece.BLANK
+
 
     	### call WelcomeMessage definition ###
         self.welcome()
@@ -669,9 +759,14 @@ class ConnectFour(SampleBase):
             break
 
         # now we want to clear the canvas and show the End Message
-        #boxcanvas.Clear()
-        #boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
-        #self.endMessage()
+        start = time.time()
+        while time.time() - start < 4:
+            boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
+            continue
+        boxcanvas.Clear()
+        boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
+        self.endMessage()
+
 
 
 # function for adding a piece into the board
