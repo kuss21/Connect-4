@@ -228,7 +228,7 @@ def connected_three(position):
 #           return True
             if board[row][col] == player:
                 count +=1
-                if count == 4:
+                if count == 3:
                     return True
             else:
                 count = 0
@@ -239,7 +239,7 @@ def connected_three(position):
         for col in range(amtOfCol):
             if board[row][col] == player:
                 count +=1
-                if count ==4:
+                if count ==3:
                     return True
             else:
                 count = 0
@@ -254,7 +254,7 @@ def connected_three(position):
                     break
                 if board[row+n][col-n] == player:
                     count +=1
-                    if count == 4:
+                    if count == 3:
                     	return True
 					else:
                     	count = 0
@@ -270,7 +270,7 @@ def connected_three(position):
 					break
 				if board[row+n][col+n] == player:
 					count += 1
-					if count == 4:
+					if count == 3:
 						return True
 				else:
 					count = 0
