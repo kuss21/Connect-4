@@ -133,6 +133,20 @@ class ConnectFour(SampleBase):
 
         return False
 
+    def drawBoard(self):
+        for row in range(amtOfRow):
+            line = '|'
+            for col in range(amtOfCol): # MIGHT NOT NEED THE - 1
+                if(board[amtOfRow - row - 1][col] == Piece.BLANK):
+                    line += ' '
+                elif(board[amtOfRow - row - 1][col] == Piece.RED):
+                    line += 'O'
+                elif(board[amtOfRow - row - 1][col] == Piece.YELLOW):
+                    line += 'X'
+                line += '|'
+                print(line)
+        print('-----------------')
+        time.sleep(1)
 
     def run(self):
         # first we will want to call the Welcome Message function to display a welcome message to the player(s)
@@ -147,8 +161,13 @@ class ConnectFour(SampleBase):
         boxcanvas = self.matrix.CreateFrameCanvas()
 
         # define a variable for player
-        player = Piece.RED
-	   
+        if(PlayerTURN[0] == 1):
+            # first player to go will be player 1
+            player = Piece.RED
+            PlayerTURN[0] += 1
+        else:
+            player = Piece.YELLOW
+            PlayerTURN[0] -= 1	   
         # sets boardColor of rows and columns as purple/violet
         boardColor = graphics.Color(133, 127, 148)
 	    
@@ -245,10 +264,12 @@ class ConnectFour(SampleBase):
             colValue = amtOfCol - 1
 
 	    # everytime it has to redraw the Player's chip or a placed chip, it'll check if there's a winner
-            while(self.endGame(player) == False):
-                #if(self.endGame(player) is True):
-                #    print(self.endGame())
-                #    break
+            while(True):
+                #self.drawBoard()
+                #time.sleep(1)
+                if(self.endGame(player) is True):
+                    print(self.endGame(player))
+                    break
                 boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
 	        # draw a black line which will erase anything in the chip zone
                 graphics.DrawLine(boxcanvas, bar_row_x1, bar_col_y1, bar_row_x2, bar_col_y2, barColor)
@@ -294,7 +315,7 @@ class ConnectFour(SampleBase):
                         while time.time() - start < 0.5:
                             boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
                             continue
-                        if((chip_row_x1 == board_bound_right) and (chip_row_x2 ==board_bound_right)):
+                        if((chip_row_x1 == board_bound_right) and (chip_row_x2 == board_bound_right)):
                             chip_row_x1 = board_bound_right
                             chip_row_x2 = board_bound_right
                             break
@@ -313,13 +334,14 @@ class ConnectFour(SampleBase):
                             boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
                             continue
 
-	                # call function to add a piece into the board
-                        addPieceFunc = addPiece()
-                        addPieceFunc.run(boxcanvas, colValue, player)
+
 
 	                # if the column is full, you don't want to change players or the chipColor
                         if(board[amtOfRow - 1][colValue] is Piece.BLANK):
-                            if(chipColor is playerOneColor):
+                            # call function to add a piece into the board
+                            addPieceFunc = addPiece()
+                            addPieceFunc.run(boxcanvas, colValue, player) 
+                            if(player is Piece.RED):
                                 chipColor = playerTwoColor
                                 player = Piece.YELLOW
                                 break
@@ -331,8 +353,11 @@ class ConnectFour(SampleBase):
                             break
                     else:
                         break 
+            break
         while True:
             print("Done")
+            self.drawBoard()
+            time.sleep(10)
 	
         
            
@@ -349,13 +374,7 @@ class addPiece(SampleBase):
         playerOneColor = graphics.Color(255,0,0) # red
         playerTwoColor = graphics.Color(255, 255, 0) # yellow
         
-        if(PlayerTURN[0] == 1):
-            # first player to go will be player 1
-            player = Piece.RED
-            PlayerTURN[0] += 1
-        else:
-            player = Piece.YELLOW
-            PlayerTURN[0] -= 1
+
         #print(player)
 
         # so as you move along the columns and rows
@@ -387,7 +406,7 @@ class addPiece(SampleBase):
                     if(board[row][column] == Piece.BLANK):
                         board[row][column] = player
                         if(player == Piece.RED):
-                            print("drawing chip in row:", row)
+                            print("drawing red chip in row:", row)
                             graphics.DrawLine(canvas, original_x+(column*4), original_y-(row*4), original_x+(column*4),  original_y-(row*4)+1, playerOneColor)
                             #x_coord = original_x+(col*4)
                             #print("x coord:", x_coord)
@@ -397,11 +416,11 @@ class addPiece(SampleBase):
                             graphics.DrawLine(canvas, original_x+(column*4)+1, original_y-(row*4), original_x+(column*4)+1, original_y-(row*4)+1, playerOneColor)
                             #canvas = self.matrix.SwapOnVSync(canvas)
 
-                            player = Piece.YELLOW
-                            print("setting player to ", player)
+                            #player = Piece.YELLOW
+                            #print("setting player to ", player)
                             break
                         elif(player == Piece.YELLOW):
-                            print("drawing blue chip in row:", row)
+                            print("drawing yellow chip in row:", row)
                             graphics.DrawLine(canvas, original_x+(column*4), original_y-(row*4), original_x+(column*4),  original_y-(row*4)+1, playerTwoColor)
                             #x_coord = original_x+(col*4)
                             #print("x coord:", x_coord)
@@ -411,7 +430,7 @@ class addPiece(SampleBase):
                             graphics.DrawLine(canvas, original_x+(column*4)+1, original_y-(row*4), original_x+(column*4)+1, original_y-(row*4)+1, playerTwoColor)
                             #canvas = self.matrix.SwapOnVSync(canvas)
 
-                            player = Piece.RED
+                            #player = Piece.RED
 
                             break
                 break              
