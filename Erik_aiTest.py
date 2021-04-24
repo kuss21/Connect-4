@@ -168,57 +168,112 @@ def connected_four(position):
 
 def connected_three(position):
 	#check for win vertical 
-	for col in range(amtOfCol):
-		inRow = 0
-		for index in range(amtOfRow + 1):
-			shift = (col * (amtOfRow + 1)) + index
-			if((position >> shift) & 1) == 1:
-				inRow += 1
-			else:
-				inRow = 0
+	#for col in range(amtOfCol):
+		#inRow = 0
+		#for index in range(amtOfRow + 1):
+			#shift = (col * (amtOfRow + 1)) + index
+			#if((position >> shift) & 1) == 1:
+				#inRow += 1
+			#else:
+				#inRow = 0
 
-			if inRow == 3:
-				return True
+			#if inRow == 3:
+				#return True
 
 	#check for win horizontal
-	for row in range(amtOfRow):
-		inRow = 0
-		for index in range(amtOfCol):
-			shift = (row) + (index * (amtOfRow + 1))
-			if((position >> shift) & 1) == 1:
-				inRow += 1
-			else:
-				inRow = 0
+	#for row in range(amtOfRow):
+		#inRow = 0
+		#for index in range(amtOfCol):
+			#shift = (row) + (index * (amtOfRow + 1))
+			#if((position >> shift) & 1) == 1:
+				#inRow += 1
+			#else:
+				#inRow = 0
 
-			if inRow == 3:
-				return True
+			#if inRow == 3:
+				#return True
 
 	#check for bottom left to top right diagonal
-	for row in range(amtOfRow + 2):
-		for col in range(amtOfCol - 1):
-			shift = row + (col * (amtOfRow + 2))
-			if((position >> shift) & 1) == 1:
-				inRow += 1
-			else:
-				inRow = 0
+	#for row in range(amtOfRow + 2):
+		#for col in range(amtOfCol - 1):
+			#shift = row + (col * (amtOfRow + 2))
+			#if((position >> shift) & 1) == 1:
+				#inRow += 1
+			#else:
+				#inRow = 0
 
-			if inRow == 3:
-				return True
+			#if inRow == 3:
+				#return True
 
 	#check for top left to bottom right diagonal
-	for row in range(amtOfRow):
-		for col in range(amtOfCol + 2):
-			shift = row + (col * amtOfRow)
-			if((position >> shift) & 1) == 1:
-				inRow += 1
-			else:
-				inRow = 0
+	#for row in range(amtOfRow):
+		#for col in range(amtOfCol + 2):
+			#shift = row + (col * amtOfRow)
+			#if((position >> shift) & 1) == 1:
+				#inRow += 1
+			#else:
+				#inRow = 0
 
-			if inRow == 3:
-				return True
+			#if inRow == 3:
+				#return True
 
 
-	return False
+	#return False
+
+	for col in range(amtOfCol):
+    	count = 0
+        for row in range(amtOfRow):
+#           if count == 4:
+            #WIN condition
+#           return True
+            if board[row][col] == player:
+                count +=1
+                if count == 4:
+                    return True
+            else:
+                count = 0
+
+    #check horizontal 
+    for row in range(amtOfRow):
+        count = 0
+        for col in range(amtOfCol):
+            if board[row][col] == player:
+                count +=1
+                if count ==4:
+                    return True
+            else:
+                count = 0
+
+    #check diagonal R-L ##!!DIDN'T WORK!!##
+    # SWEEP FROM R-L, CHECK OUT N AS WELL
+    for col in range(amtOfCol-1,0,-1):
+        count = 0
+        for row in range(amtOfRow):
+            for n in range(7):
+                if row+n >= amtOfRow or col-n <= 0:
+                    break
+                if board[row+n][col-n] == player:
+                    count +=1
+                    if count == 4:
+                    	return True
+					else:
+                    	count = 0
+
+	#check diagonal L-R 
+	for col in range(amtOfCol):
+		count = 0
+		for row in range(amtOfRow):
+			#if board[row][col] ==player:
+			for n in range(7):
+				####### maybe 6 and see if row+n or col+n >amt col or row then break
+				if row+n >= amtOfRow or col+n >= amtOfCol:
+					break
+				if board[row+n][col+n] == player:
+					count += 1
+					if count == 4:
+						return True
+				else:
+					count = 0
 
 def removePiece(board, col):
 	if(board[0][col] != Piece.BLANK):
