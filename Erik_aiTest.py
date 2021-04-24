@@ -166,7 +166,7 @@ def connected_four(position):
 
 	return False
 
-def connected_three(position):
+def connected_three(position, player):
 	#check for win vertical 
 	#for col in range(amtOfCol):
 		#inRow = 0
@@ -285,23 +285,17 @@ def removePiece(board, col):
 		return
 
 def comMove(board):
-	yellowMap = get_position_mask_bitmap(board, Piece.YELLOW)
-	redMap = get_position_mask_bitmap(board, Piece.RED)
-
-
-	if(connected_three(yellowMap) == True):
+	if(connected_three(board, player) == True):
 		for col in range(amtOfCol):
 			addPiece(board, col, Piece.Yellow)
-			yellowMap = get_position_mask_bitmap(board, Piece.YELLOW)
-			if(connected_four(yellowMap) == True):
+			if(connected_four(board, player) == True):
 				return col
 			removePiece(board, col)
 
-	if(connected_three(redMap) == True):
+	if(connected_three(board, player) == True):
 		for col in range(amtOfCol):
 			addPiece(board, col, Piece.RED)
-			redMap = get_position_mask_bitmap(board, Piece.RED)
-			if(connected_four(redMap) == True):
+			if(connected_four(board, player) == True):
 				return col
 			removePiece(board, col)
 
