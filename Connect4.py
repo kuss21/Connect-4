@@ -109,6 +109,10 @@ class ConnectFour(SampleBase):
                 if board[row][col] == player:
                     count +=1
                     if count == 4:
+                        print("vertical win")
+                        #start = time.time()
+                        #while(time.time() - start < 3):
+                        #    continue
                         return True
                 else:
                     count = 0
@@ -120,6 +124,10 @@ class ConnectFour(SampleBase):
                 if board[row][col] == player:
                     count +=1
                     if count ==4:
+                        print("horizontal win")
+                        #start = time.time()
+                        #while(time.time() - start < 3):
+                        #    continue
                         return True
                 else:
                     count = 0
@@ -128,12 +136,17 @@ class ConnectFour(SampleBase):
         for col in range(amtOfCol-1,0,-1):
             count = 0
             for row in range(amtOfRow):
+                count = 0
                 for n in range(7):
-                    if row+n >= amtOfRow or col-n <= 0:
+                    if row+n >= amtOfRow or col-n < 0:
                         break
                     if board[row+n][col-n] == player:
                         count +=1
                         if count == 4:
+                            print("Diagonal R-L win")
+                            #start = time.time()
+                            #while(time.time() - start < 3):
+                            #    continue
                             return True
                     else:
                         count = 0
@@ -142,13 +155,19 @@ class ConnectFour(SampleBase):
         for col in range(amtOfCol):
             count = 0
             for row in range(amtOfRow):
-                #if board[row][col] ==player:
-                for n in range(7):
+                count = 0
+                for n in range(0,7,1):
                     if row+n >= amtOfRow or col+n >= amtOfCol:
                         break
-                    if board[row+n][col+n] == player:
+                    if board[row+n][col+n] == player and board[row+n][col+n] is not Piece.BLANK:
                         count += 1
+                        #print(count)
                         if count == 4:
+                            print("Diagonal L-R win")
+                            #print("row:", row, "row+n:", row+n, "col:", col, "col+n", col+n)
+                            #start = time.time()
+                            #while(time.time() - start < 3):
+                            #    continue
                             return True
                     else:
                         count = 0
@@ -179,13 +198,12 @@ class ConnectFour(SampleBase):
                 else:
                     count = 0
 
-        #check diagonal R-L ##!!DIDN'T WORK!!##
-        # SWEEP FROM R-L, CHECK OUT N AS WELL
+        #check diagonal R-L 
         for col in range(amtOfCol-1,0,-1):
             count = 0
             for row in range(amtOfRow):
                 for n in range(7):
-                    if row+n >= amtOfRow or col-n <= 0:
+                    if row+n >= amtOfRow or col-n < 0:
                         break
                     if board[row+n][col-n] == player:
                         count +=1
@@ -233,12 +251,12 @@ class ConnectFour(SampleBase):
                 else:
                     count = 0
 
-        #check diagonal R-L ##!!DIDN'T WORK!!##
+        #check diagonal R-L 
         for col in range(amtOfCol-1,0,-1):
             count = 0
             for row in range(amtOfRow):
                 for n in range(7):
-                    if row+n >= amtOfRow or col-n <= 0:
+                    if row+n >= amtOfRow or col-n < 0:
                         break
                     if board[row+n][col-n] == player:
                         count +=1
@@ -266,7 +284,7 @@ class ConnectFour(SampleBase):
 
     def addPieceVirtual(self, column, player):
         for row in range(amtOfRow):
-            if(board[row][column] == Piece.BLANK):
+            if(board[row][column] == Piece.BLANK and board[row][column] is not Piece.RED and board[row][column] is not Piece.YELLOW):
                 board[row][column] = player
                 return
 
@@ -443,18 +461,20 @@ class ConnectFour(SampleBase):
         self.welcome()
 
     	# Next we want to draw the board and check if it's the end of the game (if winner)
-        print("in DrawBoard function")
+        #print("in DrawBoard function")
 	# creates a matrix called boxcanvas
         boxcanvas = self.matrix.CreateFrameCanvas()
+        
+        player = Piece.RED
 
         # define a variable for player
-        if(PlayerTURN[0] == 1):
+        #if(PlayerTURN[0] == 1):
             # first player to go will be player 1
-            player = Piece.RED
-            PlayerTURN[0] += 1
-        else:
-            player = Piece.YELLOW
-            PlayerTURN[0] -= 1	   
+        #    player = Piece.RED
+        #    PlayerTURN[0] += 1
+        #else:
+        #    player = Piece.YELLOW
+        #    PlayerTURN[0] -= 1	   
         # sets boardColor of rows and columns as purple/violet
         boardColor = graphics.Color(133, 127, 148)
 	    
@@ -523,7 +543,7 @@ class ConnectFour(SampleBase):
                 boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
 	        # now go back to the beginning of for loop with incremented value of row_position + 3
 
-            print("in DisplayChip function call")
+            #print("in DisplayChip function call")
 	    #canvas = self.matrix.CreateFrameCanvas()
             boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
 
@@ -777,7 +797,7 @@ class addPiece(SampleBase):
         super(addPiece, self).__init__(*args, **kwargs)
 
     def run(self, canvas, column, player): # WILL NEED TO ADD WHICH PLAYER'S TURN IT IS
-        print("in addPiece function")
+        #print("in addPiece function")
 
         #chip_canvas = self.matrix.CreateFrameCanvas()
 
