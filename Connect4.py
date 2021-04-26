@@ -202,6 +202,7 @@ class ConnectFour(SampleBase):
         for col in range(amtOfCol-1,0,-1):
             count = 0
             for row in range(amtOfRow):
+                count = 0
                 for n in range(7):
                     if row+n >= amtOfRow or col-n < 0:
                         break
@@ -216,6 +217,7 @@ class ConnectFour(SampleBase):
         for col in range(amtOfCol):
             count = 0
             for row in range(amtOfRow):
+                count = 0
                 for n in range(7):
                     if row+n >= amtOfRow or col+n >= amtOfCol:
                         break
@@ -255,6 +257,7 @@ class ConnectFour(SampleBase):
         for col in range(amtOfCol-1,0,-1):
             count = 0
             for row in range(amtOfRow):
+                count = 0
                 for n in range(7):
                     if row+n >= amtOfRow or col-n < 0:
                         break
@@ -269,6 +272,7 @@ class ConnectFour(SampleBase):
         for col in range(amtOfCol):
             count = 0
             for row in range(amtOfRow):
+                count = 0
                 for n in range(7):
                     if row+n >= amtOfRow or col+n >= amtOfCol:
                         break
@@ -284,7 +288,7 @@ class ConnectFour(SampleBase):
 
     def addPieceVirtual(self, column, player):
         for row in range(amtOfRow):
-            if(board[row][column] == Piece.BLANK and board[row][column] is not Piece.RED and board[row][column] is not Piece.YELLOW):
+            if(board[row][column] == Piece.BLANK or (board[row][column] is not Piece.RED and board[row][column] is not Piece.YELLOW)):
                 board[row][column] = player
                 return
 
@@ -301,35 +305,43 @@ class ConnectFour(SampleBase):
     def comMove(self):
         if(self.connected_three(Piece.YELLOW) == True):
             for col in range(amtOfCol):
-                self.addPieceVirtual(col, Piece.YELLOW)
-                if(self.connected_four(Piece.YELLOW) == True):
+                if(self.colNotFull(col) is True):
+                    self.addPieceVirtual(col, Piece.YELLOW)
+                    if(self.connected_four(Piece.YELLOW) == True):
+                        self.removePiece(col)
+                        print("saw connect 3 in col:", col)
+                        return col
                     self.removePiece(col)
-                    return col
-                self.removePiece(col)
 
         if(self.connected_three(Piece.RED) == True):
             for col in range(amtOfCol):
-                self.addPieceVirtual(col, Piece.RED)
-                if(self.connected_four(Piece.RED) == True):
+                if(self.colNotFull(col) is True):
+                    self.addPieceVirtual(col, Piece.RED)
+                    if(self.connected_four(Piece.RED) == True):
+                        self.removePiece(col)
+                        print("saw connect 3 for RED in col:", col)
+                        return col
                     self.removePiece(col)
-                    return col
-                self.removePiece(col)
 
         if(self.connected_two(Piece.YELLOW) == True):
             for col in range(amtOfCol):
-                self.addPieceVirtual(col, Piece.YELLOW)
-                if(self.connected_three(Piece.YELLOW) == True):
+                if(self.colNotFull(col) is True):
+                    self.addPieceVirtual(col, Piece.YELLOW)
+                    if(self.connected_three(Piece.YELLOW) == True):
+                        self.removePiece(col)
+                        print("saw connect 2 in col:", col)
+                        return col
                     self.removePiece(col)
-                    return col
-                self.removePiece(col)
 
         if(self.connected_two(Piece.RED) == True):
             for col in range(amtOfCol):
-                self.addPieceVirtual(col, Piece.RED)
-                if(self.connected_three(Piece.RED) == True):
+                if(self.colNotFull(col) is True):
+                    self.addPieceVirtual(col, Piece.RED)
+                    if(self.connected_three(Piece.RED) == True):
+                        self.removePiece(col)
+                        print("saw connect 2 for RED in col:", col)
+                        return col
                     self.removePiece(col)
-                    return col
-                self.removePiece(col)
 
 
         while True:
@@ -339,7 +351,13 @@ class ConnectFour(SampleBase):
             continue
         return number 
 
-
+    
+    
+    def colNotFull(self, col):
+        if(board[amtOfRow-1][col] is Piece.BLANK):
+            return True
+        else:
+            return False
 
 
 
@@ -687,7 +705,8 @@ class ConnectFour(SampleBase):
                     if(player is Piece.YELLOW):
                         # call comMove
                         colValueAI = self.comMove()
-                        if(board[amtOfRow - 1][colValue] is Piece.BLANK):
+                        if(board[amtOfRow - 1][colValueAI] is Piece.BLANK or (board[amtOfRow - 1][colValueAI] is not Piece.RED and board[amtOfRow - 1][colValueAI] is not Piece.YELLOW)):
+                            print(board[amtOfRow-1][colValueAI])
                             # call function to add a piece into the board
                             addPieceFunc = addPiece()
                             addPieceFunc.run(boxcanvas, colValueAI, player)
@@ -699,7 +718,6 @@ class ConnectFour(SampleBase):
                                 boxcanvas.Clear()
                                 boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
                                 self.endMessage()
-
                     leftInput = GPIO.input(18)
                     rightInput = GPIO.input(19)
                     selectInput = GPIO.input(25)
