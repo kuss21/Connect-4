@@ -61,42 +61,28 @@ class ConnectFour(SampleBase):
     #endGame checks to see if the game is done by seeing if there are any empty spaces left (currently doesn't
     #check for wins (lines of four))
     def endGame(self, player):
-        if(self.connected_four(self.get_position_mask_bitmap(player))):
-            print("WIN")
-            return True
+        #if(self.connected_four(player)):
+        #    return True
 
         if(self.connected_four(player) is True):
-            print("WIN")
             if player == Piece.RED:
                 WINNER[0] = 1
             elif player == Piece.YELLOW:
                 WINNER[0] = 2
             return True
 
-        for row in range(amtOfRow):
-            for col in range(amtOfCol):
-                if(board[row][col] == Piece.BLANK):
+        # check if game board is full
+        for col in range(amtOfCol):
+                if(board[amtOfRow-1][col] is Piece.BLANK):
                     return False
         
-        print("TIE")
+        #for row in range(amtOfRow):
+        #    for col in range(amtOfCol):
+        #        if(board[row][col] == Piece.BLANK):
+        #            return False
+        
         WINNER[0] = 0 #means it's a tie
         return True
-
-    #changing an array into a bitstring
-    #code is referenced from TowardsDataScience.com
-    def get_position_mask_bitmap(self, player):
-        bitmap = ""
-        for col in range (0, amtOfCol, 1):
-            for row in range (0, amtOfRow, 1):
-                if board[row][col] == player:
-                    bitmap = "1" + bitmap
-                else:
-                    bitmap = "0" + bitmap
-		#add an extra zero into the bitstring to help with checking for diagonal wins
-		#this is similar to adding an extra row full of blanks 
-                bitmap = "0" + bitmap
-        #print(int(bitmap, 2))
-        return int(bitmap, 2)
 
     #check for wins on the board
     #code is referenced from TowardsDataScience.com
@@ -109,10 +95,6 @@ class ConnectFour(SampleBase):
                 if board[row][col] == player:
                     count +=1
                     if count == 4:
-                        print("vertical win")
-                        #start = time.time()
-                        #while(time.time() - start < 3):
-                        #    continue
                         return True
                 else:
                     count = 0
@@ -124,10 +106,6 @@ class ConnectFour(SampleBase):
                 if board[row][col] == player:
                     count +=1
                     if count ==4:
-                        print("horizontal win")
-                        #start = time.time()
-                        #while(time.time() - start < 3):
-                        #    continue
                         return True
                 else:
                     count = 0
@@ -143,10 +121,6 @@ class ConnectFour(SampleBase):
                     if board[row+n][col-n] == player:
                         count +=1
                         if count == 4:
-                            print("Diagonal R-L win")
-                            #start = time.time()
-                            #while(time.time() - start < 3):
-                            #    continue
                             return True
                     else:
                         count = 0
@@ -161,13 +135,7 @@ class ConnectFour(SampleBase):
                         break
                     if board[row+n][col+n] == player and board[row+n][col+n] is not Piece.BLANK:
                         count += 1
-                        #print(count)
                         if count == 4:
-                            print("Diagonal L-R win")
-                            #print("row:", row, "row+n:", row+n, "col:", col, "col+n", col+n)
-                            #start = time.time()
-                            #while(time.time() - start < 3):
-                            #    continue
                             return True
                     else:
                         count = 0
@@ -309,7 +277,6 @@ class ConnectFour(SampleBase):
                     self.addPieceVirtual(col, Piece.YELLOW)
                     if(self.connected_four(Piece.YELLOW) == True):
                         self.removePiece(col)
-                        print("saw connect 3 in col:", col)
                         return col
                     self.removePiece(col)
 
@@ -319,7 +286,6 @@ class ConnectFour(SampleBase):
                     self.addPieceVirtual(col, Piece.RED)
                     if(self.connected_four(Piece.RED) == True):
                         self.removePiece(col)
-                        print("saw connect 3 for RED in col:", col)
                         return col
                     self.removePiece(col)
 
@@ -329,7 +295,6 @@ class ConnectFour(SampleBase):
                     self.addPieceVirtual(col, Piece.YELLOW)
                     if(self.connected_three(Piece.YELLOW) == True):
                         self.removePiece(col)
-                        print("saw connect 2 in col:", col)
                         return col
                     self.removePiece(col)
 
@@ -339,7 +304,6 @@ class ConnectFour(SampleBase):
                     self.addPieceVirtual(col, Piece.RED)
                     if(self.connected_three(Piece.RED) == True):
                         self.removePiece(col)
-                        print("saw connect 2 for RED in col:", col)
                         return col
                     self.removePiece(col)
 
@@ -359,30 +323,13 @@ class ConnectFour(SampleBase):
         else:
             return False
 
-
-
-    def drawBoard(self):
-        for row in range(amtOfRow):
-            line = '|'
-            for col in range(amtOfCol): # MIGHT NOT NEED THE - 1
-                if(board[amtOfRow - row - 1][col] == Piece.BLANK):
-                    line += ' '
-                elif(board[amtOfRow - row - 1][col] == Piece.RED):
-                    line += 'O'
-                elif(board[amtOfRow - row - 1][col] == Piece.YELLOW):
-                    line += 'X'
-                line += '|'
-                print(line)
-        print('-----------------')
-        time.sleep(1)
-
     def welcome(self):
         wel_canvas = self.matrix.CreateFrameCanvas()
         wel_color = graphics.Color(255,255,0) #RED=(255,0,0), CORAL=(255,127,80), FOREST GREEN=(34,129,34), AQUAMARINE=(127,255,212)
         one_player = graphics.Color(255,0,0) #red
         two_player = graphics.Color(0,0,255) #blue
         font = graphics.Font()
-        font.LoadFont('../../../fonts/7x13.bdf') #IF WE MOVE THIS FILE, WE NEED TO REWRITE THIS!!!!
+        font.LoadFont('/home/pi/rpi-rgb-led-matrix/fonts/7x13.bdf')
         #text will take up 9 lines, cannot make smaller with this font
         pos_wel_x = 1 #this will make the text flush to the L
         pos_wel_y = 9 #this will make the text flush to the top
@@ -406,7 +353,6 @@ class ConnectFour(SampleBase):
                 start = time.time()
                 while time.time() - start < 0.5:
                     continue
-                print("one player")
                 wel_canvas.Clear()
                 wel_canvas = self.matrix.SwapOnVSync(wel_canvas)
                 #call functions with AI
@@ -417,7 +363,6 @@ class ConnectFour(SampleBase):
                 start = time.time()
                 while time.time() - start < 0.5:
                     continue
-                print("two player")
                 wel_canvas.Clear()
                 wel_canvas = self.matrix.SwapOnVSync(wel_canvas)
                 AISWITCH[0] = 0
@@ -432,7 +377,7 @@ class ConnectFour(SampleBase):
         tie_end_color = graphics.Color(128,0,255)
         tie_color = graphics.Color(0,255,17)
         font = graphics.Font()
-        font.LoadFont("../../../fonts/7x13.bdf")
+        font.LoadFont("/home/pi/rpi-rgb-led-matrix/fonts/7x13.bdf")
 
         cent_x = self.matrix.width /2
         cent_y = self.matrix.height /2
@@ -479,28 +424,16 @@ class ConnectFour(SampleBase):
         self.welcome()
 
     	# Next we want to draw the board and check if it's the end of the game (if winner)
-        #print("in DrawBoard function")
 	# creates a matrix called boxcanvas
         boxcanvas = self.matrix.CreateFrameCanvas()
         
         player = Piece.RED
-
-        # define a variable for player
-        #if(PlayerTURN[0] == 1):
-            # first player to go will be player 1
-        #    player = Piece.RED
-        #    PlayerTURN[0] += 1
-        #else:
-        #    player = Piece.YELLOW
-        #    PlayerTURN[0] -= 1	   
         # sets boardColor of rows and columns as purple/violet
         boardColor = graphics.Color(133, 127, 148)
 	    
         # increment amount
         inc_amt = 4
 	
-        #print(self.get_position_mask_bitmap())
-
 	# every time it goes to redraw the board, it'll check for a winner
         while(True):
 	    # postion variables for drawing the board
@@ -545,7 +478,6 @@ class ConnectFour(SampleBase):
                 col_pos_x2 += 3
                 boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
 	    # now go back to the beginning of for loop with incremented value of col_position + 3
-	    # ! MIGHT NEED TO HAVE A CHECKER HERE TO MAKE SURE COL_POS_(X OR Y) AREN'T > COL_COUNT ! #
             boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
 
 	    # draw in one row at a time in a for loop
@@ -610,15 +542,11 @@ class ConnectFour(SampleBase):
                 graphics.DrawLine(boxcanvas, LRW_x1+LRW, LRW_y1-LRW, LRW_x2+LRW, LRW_y2-LRW, LRW_Color)
                 graphics.DrawLine(boxcanvas, LRW_x1+LRW+1, LRW_y1-LRW, LRW_x2+LRW+1, LRW_y2-LRW, LRW_Color)
 
-            #print("in DisplayChip function call")
-	    #canvas = self.matrix.CreateFrameCanvas()
             boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
 
-	    #chipColor = graphics.Color(0, 0, 255)
             playerOneColor = graphics.Color(255, 0, 0)
             playerTwoColor = graphics.Color(255, 255, 0)
 
-	    # !! NEED TO SWITCH AROUND ROW AND COL NAMES (THEY GOT MIXED UP)!!
 	    # first position of chip
             chip_row_x1 = 38
             chip_col_y1 = 0
@@ -639,10 +567,7 @@ class ConnectFour(SampleBase):
 
 	    # everytime it has to redraw the Player's chip or a placed chip, it'll check if there's a winner
             while(AISWITCH[0] == 0):
-                #self.drawBoard()
-                #time.sleep(1)
                 if(self.endGame(player) is True):
-                    #print(self.endGame(player))
                     break
                 boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
 	        # draw a black line which will erase anything in the chip zone
@@ -660,8 +585,6 @@ class ConnectFour(SampleBase):
                     rightInput = GPIO.input(19)
                     selectInput = GPIO.input(25)
                     if(not leftInput):
-	                #print("piece moved left")
-	                #time.sleep(0.1) #changed time sleep to half a second
                         start = time.time()
                         while time.time() - start < 0.5:
                             boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
@@ -676,15 +599,9 @@ class ConnectFour(SampleBase):
                             colValue -= 1
                             if(colValue < 0):
                                 colValue = 0
-	                    # test to see how to call a function
-	                    # it needs to be outside of class definition!
-	                    # testFunc = Test_Function()
-	                    # testFunc.run(chip_canvas)
                             boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
                             break
                     elif(not rightInput):
-	                #print("piece moved right")
-	                #time.sleep(0.1) #see if this is enough time
                         start = time.time()
                         while time.time() - start < 0.5:
                             boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
@@ -702,7 +619,6 @@ class ConnectFour(SampleBase):
                             boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
                             break
                     elif(not selectInput):
-	                #print("piece selected")
                         start = time.time()
                         while time.time() - start < 0.5:
                             boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
@@ -736,7 +652,6 @@ class ConnectFour(SampleBase):
             # while loop for AI
             while(AISWITCH[0] == 1):
                 if(self.endGame(player) is True):
-                    #print(self.endGame(player))
                     break
                 boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
 	        # draw a black line which will erase anything in the chip zone
@@ -755,7 +670,6 @@ class ConnectFour(SampleBase):
                         # call comMove
                         colValueAI = self.comMove()
                         if(board[amtOfRow - 1][colValueAI] is Piece.BLANK or (board[amtOfRow - 1][colValueAI] is not Piece.RED and board[amtOfRow - 1][colValueAI] is not Piece.YELLOW)):
-                            print(board[amtOfRow-1][colValueAI])
                             # call function to add a piece into the board
                             addPieceFunc = addPiece()
                             addPieceFunc.run(boxcanvas, colValueAI, player)
@@ -771,7 +685,6 @@ class ConnectFour(SampleBase):
                     rightInput = GPIO.input(19)
                     selectInput = GPIO.input(25)
                     if(not leftInput):
-	                #print("piece moved left")
                         start = time.time()
                         while time.time() - start < 0.5:
                             boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
@@ -789,7 +702,6 @@ class ConnectFour(SampleBase):
                             boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
                             break
                     elif(not rightInput):
-	                #print("piece moved right")
                         start = time.time()
                         while time.time() - start < 0.5:
                             boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
@@ -807,12 +719,10 @@ class ConnectFour(SampleBase):
                             boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
                             break
                     elif(not selectInput):
-	                #print("piece selected")
                         start = time.time()
                         while time.time() - start < 0.5:
                             boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
                             continue
-
 
 	                # if the column is full, you don't want to change players or the chipColor
                         if(board[amtOfRow - 1][colValue] is Piece.BLANK):
@@ -829,10 +739,10 @@ class ConnectFour(SampleBase):
                                     player = Piece.RED
                                     break
                             else:
-                                start = time.time()
-                                while time.time() - start < 4:
-                                    boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
-                                    continue
+                                #start = time.time()
+                                #while time.time() - start < 4:
+                                #    boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
+                                #    continue
                                 # if there is a winning combo
                                 boxcanvas.Clear()
                                 boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
@@ -842,14 +752,13 @@ class ConnectFour(SampleBase):
                     else:
                         break 
                 
-            
             break
 
         # now we want to clear the canvas and show the End Message
-        start = time.time()
-        while time.time() - start < 4:
-            boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
-            continue
+        #start = time.time()
+        #while time.time() - start < 4:
+        #    boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
+        #    continue
         boxcanvas.Clear()
         boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
         self.endMessage()
@@ -863,17 +772,10 @@ class addPiece(SampleBase):
     def __init__(self, *args, **kwargs):
         super(addPiece, self).__init__(*args, **kwargs)
 
-    def run(self, canvas, column, player): # WILL NEED TO ADD WHICH PLAYER'S TURN IT IS
-        #print("in addPiece function")
-
-        #chip_canvas = self.matrix.CreateFrameCanvas()
-
+    def run(self, canvas, column, player): 
         # color of player's chips
         playerOneColor = graphics.Color(255,0,0) # red
         playerTwoColor = graphics.Color(255, 255, 0) # yellow
-        
-
-        #print(player)
 
         # so as you move along the columns and rows
         # you will want to move over four for each column you move to
@@ -888,51 +790,21 @@ class addPiece(SampleBase):
             # this coordinate is (2,28)
             original_x = 2
             original_y = 28
-            #print("value of column:", column)
             
             if(column >= 0 and column < amtOfCol):
-                #canvas = self.matrix.SwapOnVSync(canvas)
-             
                 for row in range(amtOfRow):
-                    #print("in for loop")
                     if(board[amtOfRow-1][column] is not Piece.BLANK):
-                        print("column full", board[amtOfRow-1][column])
-
-                        #time.sleep(10)
-                        #canvas = self.matrix.SwapOnVSync(canvas)
                         break
                     if(board[row][column] == Piece.BLANK):
                         board[row][column] = player
                         if(player == Piece.RED):
-                            print("drawing red chip in row:", row)
                             graphics.DrawLine(canvas, original_x+(column*4), original_y-(row*4), original_x+(column*4),  original_y-(row*4)+1, playerOneColor)
-                            #x_coord = original_x+(col*4)
-                            #print("x coord:", x_coord)
-                            #y_coord = original_y-(row*4)
-                            #print("y coord:", y_coord)
-
                             graphics.DrawLine(canvas, original_x+(column*4)+1, original_y-(row*4), original_x+(column*4)+1, original_y-(row*4)+1, playerOneColor)
-                            #canvas = self.matrix.SwapOnVSync(canvas)
-
-                            #player = Piece.YELLOW
-                            #print("setting player to ", player)
                             break
                         elif(player == Piece.YELLOW):
-                            print("drawing yellow chip in row:", row)
                             graphics.DrawLine(canvas, original_x+(column*4), original_y-(row*4), original_x+(column*4),  original_y-(row*4)+1, playerTwoColor)
-                            #x_coord = original_x+(col*4)
-                            #print("x coord:", x_coord)
-                            #y_coord = original_y-(row*4)
-                            #print("y coord:", y_coord)
-
                             graphics.DrawLine(canvas, original_x+(column*4)+1, original_y-(row*4), original_x+(column*4)+1, original_y-(row*4)+1, playerTwoColor)
-                            #canvas = self.matrix.SwapOnVSync(canvas)
-
-                            #player = Piece.RED
-
                             break
-                        else:
-                            print("ERROR")
                 break              
 
 
