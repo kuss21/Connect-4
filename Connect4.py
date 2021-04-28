@@ -561,6 +561,55 @@ class ConnectFour(SampleBase):
                 boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
 	        # now go back to the beginning of for loop with incremented value of row_position + 3
 
+            # initialize variables for drawing a vertical win condition
+            verticalW_x1 = 47
+            verticalW_y1 = 3
+            verticalW_x2 = 47
+            verticalW_y2 = 4
+            verticalW_Color = graphics.Color(255, 0, 0) #this'll be red
+            # draw winning conditions on the side of the board
+            for verticalW in range(0,10,3):
+                boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
+                graphics.DrawLine(boxcanvas, verticalW_x1, verticalW_y1+verticalW, verticalW_x2, verticalW_y2+verticalW, verticalW_Color)
+                graphics.DrawLine(boxcanvas, verticalW_x1+1, verticalW_y1+verticalW, verticalW_x2+1, verticalW_y2+verticalW, verticalW_Color)
+
+            # init variables for drawing a horizontal win condition
+            horizW_x1 = 52
+            horizW_y1 = 7
+            horizW_x2 = 53
+            horizW_y2 = 7
+            horizW_Color = graphics.Color(255,255,0) #this'll be yellow
+            # draw winning conditions on the side of the board
+            for horizW in range(0, 10, 3):
+                boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
+                graphics.DrawLine(boxcanvas, horizW_x1+horizW, horizW_y1, horizW_x2+horizW, horizW_y2, horizW_Color)
+                graphics.DrawLine(boxcanvas, horizW_x1+horizW, horizW_y1+1, horizW_x2+horizW, horizW_y2+1, horizW_Color)
+
+
+            # init variables for drawing a R-L diagonal win condition
+            RLW_x1 = 45
+            RLW_y1 = 20
+            RLW_x2 = 45
+            RLW_y2 = 21
+            RLW_Color = graphics.Color(255, 255, 0) # this will be yellow
+            # draw winning conditions on the side of the board
+            for RLW in range(0, 7, 2):
+                boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
+                graphics.DrawLine(boxcanvas, RLW_x1+RLW, RLW_y1+RLW, RLW_x2+RLW, RLW_y2+RLW, RLW_Color)
+                graphics.DrawLine(boxcanvas, RLW_x1+RLW+1, RLW_y1+RLW, RLW_x2+RLW+1, RLW_y2+RLW, RLW_Color)
+
+            # init variables for drawing a L-R diagonal win condition
+            LRW_x1 = 55
+            LRW_y1 = 26
+            LRW_x2 = 55
+            LRW_y2 = 27
+            LRW_Color = graphics.Color(255,0,0) # this will be red
+            # draw winning conditions on the side of the board
+            for LRW in range(0, 7, 2):
+                boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
+                graphics.DrawLine(boxcanvas, LRW_x1+LRW, LRW_y1-LRW, LRW_x2+LRW, LRW_y2-LRW, LRW_Color)
+                graphics.DrawLine(boxcanvas, LRW_x1+LRW+1, LRW_y1-LRW, LRW_x2+LRW+1, LRW_y2-LRW, LRW_Color)
+
             #print("in DisplayChip function call")
 	    #canvas = self.matrix.CreateFrameCanvas()
             boxcanvas = self.matrix.SwapOnVSync(boxcanvas)
